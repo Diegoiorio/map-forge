@@ -106,6 +106,4 @@ Add your local values to `.env.local` like:
 
 ```
 NEXT_PUBLIC_APP_NAME=MapForge
-DATABASE_URL=postgres://user:pass@localhost:5432/mapforge
-API_KEY=replace-me
 ```

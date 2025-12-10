@@ -11,10 +11,4 @@ export const clientEnv = {
   // add more NEXT_PUBLIC_ variables here as needed
 };
 
-export const serverEnv = {
-  DATABASE_URL: process.env.DATABASE_URL ?? "",
-  API_KEY: process.env.API_KEY ?? "",
-};
-
 export type ClientEnv = typeof clientEnv;
-export type ServerEnv = typeof serverEnv;
