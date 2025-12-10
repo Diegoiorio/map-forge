@@ -37,9 +37,56 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## Project description
 
-MapForge is a web app that allows to:
+A platform that lets tabletop RPG players upload maps, place and describe custom markers, and browse a searchable archive of all their mapped worlds.
+
+Those are the main features:
 
 - Load a map as image (png, jspg...)
 - Put some markers on the map
 - Give a title and descriptions each marker
 - Open and read a map from archive with all relative markers
+
+## Notes ---------------------------------
+
+FRONT END STACK:
+chackra ui
+
+STORAGE MAPPE
+
+1. Supabase
+2. Cloudinary
+3. Save in /public/maps
+
+### Map FE Handler
+
+react-zoom-pan-pinch
+
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+
+```javascript
+export function MapViewer() {
+  return (
+    <div className="w-full h-full bg-slate-900 overflow-hidden">
+      <TransformWrapper
+        initialScale={1}
+        minScale={0.5}
+        maxScale={4}
+        centerOnInit
+      >
+        <TransformComponent>
+          <div className="relative">
+            <img src="/maps/example-map.jpg" alt="Map" />
+
+            {/* Marker di esempio */}
+            <button
+              className="absolute top-[40%] left-[60%] -translate-x-1/2 -translate-y-1/2
+                         w-4 h-4 rounded-full bg-red-500 border-2 border-white cursor-pointer"
+              onClick={() => console.log("Open side panel with marker info")}
+            />
+          </div>
+        </TransformComponent>
+      </TransformWrapper>
+    </div>
+  );
+}
+```
