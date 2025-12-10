@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Provider as ChackraProvider } from "@/components/ui/provider";
+import MainContainer from "./components/MainContainer";
+import { ClientChakraProvider } from "./providers/ClientChakraProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,9 +25,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ChackraProvider>{children}</ChackraProvider>
+        <ClientChakraProvider>
+          <MainContainer>{children}</MainContainer>
+        </ClientChakraProvider>
       </body>
     </html>
   );
