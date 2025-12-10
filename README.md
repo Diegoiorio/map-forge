@@ -97,10 +97,9 @@ export function MapViewer() {
 Example helper is provided at `src/lib/env.ts`:
 
 ```ts
-import { clientEnv, serverEnv } from './src/lib/env';
+import { clientEnv } from "./src/lib/env";
 
 console.log(clientEnv.APP_NAME); // available on client
-console.log(serverEnv.DATABASE_URL); // server-only
 ```
 
 Add your local values to `.env.local` like:
@@ -110,4 +109,3 @@ NEXT_PUBLIC_APP_NAME=MapForge
 DATABASE_URL=postgres://user:pass@localhost:5432/mapforge
 API_KEY=replace-me
 ```
-
