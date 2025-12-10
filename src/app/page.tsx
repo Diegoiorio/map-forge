@@ -1,5 +1,6 @@
 import Image from "next/image";
 import styles from "./page.module.css";
+import { clientEnv } from "@/lib/env";
 
 export default function Home() {
   return (
@@ -14,9 +15,11 @@ export default function Home() {
           priority
         />
         <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
+          <h1>{clientEnv.APP_NAME}</h1>
           <p>
-            Looking for a starting point or more instructions? Head over to{" "}
+            A platform that lets tabletop RPG players upload maps, place and
+            describe custom markers, and browse a searchable archive of all
+            their mapped worlds.{" "}
             <a
               href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
               target="_blank"

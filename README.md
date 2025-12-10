@@ -48,9 +48,6 @@ Those are the main features:
 
 ## Notes ---------------------------------
 
-FRONT END STACK:
-chackra ui
-
 STORAGE MAPPE
 
 1. Supabase
@@ -90,3 +87,27 @@ export function MapViewer() {
   );
 }
 ```
+
+## Environment variables
+
+- **Local file:** create a file named `.env.local` at the project root for local-only variables. This repository's `.gitignore` already ignores `.env*` files.
+- **Client vs Server:** variables that need to be available in browser code must be prefixed with `NEXT_PUBLIC_`. Example: `NEXT_PUBLIC_APP_NAME`.
+- **Accessing variables:** in server code use `process.env.DATABASE_URL`. In client or shared code use `process.env.NEXT_PUBLIC_APP_NAME` or the helper below.
+
+Example helper is provided at `src/lib/env.ts`:
+
+```ts
+import { clientEnv, serverEnv } from './src/lib/env';
+
+console.log(clientEnv.APP_NAME); // available on client
+console.log(serverEnv.DATABASE_URL); // server-only
+```
+
+Add your local values to `.env.local` like:
+
+```
+NEXT_PUBLIC_APP_NAME=MapForge
+DATABASE_URL=postgres://user:pass@localhost:5432/mapforge
+API_KEY=replace-me
+```
+
