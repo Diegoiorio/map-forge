@@ -46,7 +46,27 @@ Those are the main features:
 - Give a title and descriptions each marker
 - Open and read a map from archive with all relative markers
 
-## Notes ---------------------------------
+## Environment variables
+
+- **Local file:** create a file named `.env.local` at the project root for local-only variables. This repository's `.gitignore` already ignores `.env*` files.
+- **Client vs Server:** variables that need to be available in browser code must be prefixed with `NEXT_PUBLIC_`. Example: `NEXT_PUBLIC_APP_NAME`.
+- **Accessing variables:** in server code use `process.env.DATABASE_URL`. In client or shared code use `process.env.NEXT_PUBLIC_APP_NAME` or the helper below.
+
+Example helper is provided at `src/lib/env.ts`:
+
+```ts
+import { clientEnv } from "./src/lib/env";
+
+console.log(clientEnv.APP_NAME); // available on client
+```
+
+Add your local values to `.env.local` like:
+
+```
+NEXT_PUBLIC_APP_NAME=MapForge
+```
+
+## Notes ------------------------------------------------------------------
 
 STORAGE MAPPE
 
@@ -86,24 +106,4 @@ export function MapViewer() {
     </div>
   );
 }
-```
-
-## Environment variables
-
-- **Local file:** create a file named `.env.local` at the project root for local-only variables. This repository's `.gitignore` already ignores `.env*` files.
-- **Client vs Server:** variables that need to be available in browser code must be prefixed with `NEXT_PUBLIC_`. Example: `NEXT_PUBLIC_APP_NAME`.
-- **Accessing variables:** in server code use `process.env.DATABASE_URL`. In client or shared code use `process.env.NEXT_PUBLIC_APP_NAME` or the helper below.
-
-Example helper is provided at `src/lib/env.ts`:
-
-```ts
-import { clientEnv } from "./src/lib/env";
-
-console.log(clientEnv.APP_NAME); // available on client
-```
-
-Add your local values to `.env.local` like:
-
-```
-NEXT_PUBLIC_APP_NAME=MapForge
 ```
