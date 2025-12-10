@@ -64,6 +64,13 @@ Add your local values to `.env.local` like:
 
 ```
 NEXT_PUBLIC_APP_NAME=MapForge
+
+# Supabase credentials
+SUPABASE_ANON_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+SUPABASE_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+SUPABASE_URL=https://xxxxxxxxxxxxxx.supabase.co
+SUPABASE_PUBLISHABLE_KEY=xxxxxxxxxx
+SUPABASE_SERVICE_ROLE=xxxxxxxxxxxxxxxxxxxxx
 ```
 
 ## Notes ------------------------------------------------------------------

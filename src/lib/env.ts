@@ -11,4 +11,12 @@ export const clientEnv = {
   // add more NEXT_PUBLIC_ variables here as needed
 };
 
+export const supabaseCredential = {
+  SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY ?? "",
+  SUPABASE_ID: process.env.SUPABASE_ID ?? "",
+  SUPABASE_URL: process.env.SUPABASE_URL ?? "",
+  SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY ?? "",
+  SUPABASE_SERVICE_ROLE: process.env.SUPABASE_SERVICE_ROLE ?? "",
+};
+
 export type ClientEnv = typeof clientEnv;
