@@ -35,7 +35,7 @@ export default function Upload() {
 
     if (!file || !(file instanceof File) || !mapName || mapName.trim() === "") {
       setStatus("error");
-      setMessage("Please select a file before uploading.");
+      setMessage("Please insert a name and select file before uploading.");
       return;
     }
 

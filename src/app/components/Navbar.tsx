@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Flex, Icon, Collapsible } from "@chakra-ui/react";
+import { Box, Flex, Icon, Collapsible, useDisclosure } from "@chakra-ui/react";
 import { Link } from "@chakra-ui/react";
 import { useState } from "react";
 import { LuChevronDown, LuChevronUp } from "react-icons/lu";
@@ -8,12 +8,13 @@ import { LuChevronDown, LuChevronUp } from "react-icons/lu";
 interface NavLink {
   href: string;
   label: string;
+  behavior?: "link" | "openPopup";
 }
 
 const NAV_LINKS: NavLink[] = [
-  { href: "/", label: "Home" },
-  { href: "/open", label: "Open maps" },
-  { href: "/upload", label: "New map" },
+  { href: "/", label: "Home", behavior: "link" },
+  { href: "/open", label: "Open maps", behavior: "openPopup" },
+  { href: "/upload", label: "New map", behavior: "link" },
 ];
 
 export default function Navbar() {
@@ -38,16 +39,34 @@ export default function Navbar() {
               justify={"space-around"}
               align={"center"}
             >
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  style={{ marginRight: 16 }}
-                  _hover={{ textDecoration: "none", opacity: 0.7 }}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {NAV_LINKS.map((link) => {
+                if (link.behavior === "openPopup") {
+                  return (
+                    <Box
+                      key={link.href}
+                      as="button"
+                      onClick={() => {
+                        console.log("Open map clicked"); // [TODO] Implement open map functionality
+                      }}
+                      _hover={{ textDecoration: "none", opacity: 0.7 }}
+                      style={{ marginRight: 16 }}
+                    >
+                      {link.label}
+                    </Box>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    style={{ marginRight: 16 }}
+                    _hover={{ textDecoration: "none", opacity: 0.7 }}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
             </Flex>
           </Box>
         </Collapsible.Content>
