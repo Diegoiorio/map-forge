@@ -1,4 +1,4 @@
-import { Button, HStack } from "@chakra-ui/react";
+import { Button } from "@chakra-ui/react";
 
 export default function AppButton(props: {
   children: React.ReactNode;
@@ -6,6 +6,7 @@ export default function AppButton(props: {
   type?: "button" | "submit" | "reset";
   onClick?: () => void;
   disabled?: boolean;
+  className?: string;
 }) {
   return (
     <Button
@@ -13,6 +14,7 @@ export default function AppButton(props: {
       type={props.type}
       onClick={props.onClick}
       disabled={props.disabled}
+      className={`!pl-8 !pr-8 ${props.className}`}
     >
       {props.children}
     </Button>

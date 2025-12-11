@@ -1,13 +1,9 @@
+import { Heading } from "@chakra-ui/react";
+
 export default function TitleH1(props: { children: React.ReactNode }) {
   return (
-    <h1
-      className="
-        !text-4xl
-        !font-extrabold
-        !mt-4 !mb-4
-      "
-    >
+    <Heading as="h2" size="3xl">
       {props.children}
-    </h1>
+    </Heading>
   );
 }

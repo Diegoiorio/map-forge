@@ -1,12 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { Box, FileUpload, Icon } from "@chakra-ui/react";
+import { Box, FileUpload, Flex, Icon, Input } from "@chakra-ui/react";
 import { LuUpload } from "react-icons/lu";
-import TitleH1 from "../components/TitleH1";
+import TitleH1 from "../components/TitleH2";
 import AppButton from "../components/AppButton";
+import generatePublicMapUrl from "../../lib/generatePublicMapUrl";
+import FormContainer from "../components/FormContainer";
+import { saveMap } from "@/lib/mapService";
 
 type Status = "idle" | "uploading" | "success" | "error";
+
+interface ResponseUploadMapData {
+  message: string;
+  path?: string;
+  error?: string;
+}
 
 export default function Upload() {
   const [status, setStatus] = useState<Status>("idle");
@@ -22,28 +31,37 @@ export default function Upload() {
     const formData = new FormData(form);
 
     const file = formData.get("file");
+    const mapName = formData.get("map_name") as string;
 
-    if (!file || !(file instanceof File)) {
+    if (!file || !(file instanceof File) || !mapName || mapName.trim() === "") {
       setStatus("error");
       setMessage("Please select a file before uploading.");
       return;
     }
 
     try {
+      // Upload map image
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
       });
 
-      const data = await response.json().catch(() => ({}));
+      const data: ResponseUploadMapData = await response
+        .json()
+        .catch(() => ({}));
 
-      if (!response.ok) {
+      if (!response.ok || !data.path) {
         setStatus("error");
         setMessage(
           data?.error || "Upload failed. Please try again in a few minutes."
         );
         return;
       }
+
+      // Save map in the archive
+      const mapUrl = await generatePublicMapUrl(data.path);
+      saveMap(mapName, mapUrl);
+      //console.log(mapName, mapUrl);
 
       setStatus("success");
       setMessage("Upload successful!");
@@ -62,13 +80,10 @@ export default function Upload() {
       <TitleH1>Upload your map</TitleH1>
 
       <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <div className="flex justify-center items-center !mb-4 mt-4">
-          <FileUpload.Root
-            className="m-auto"
-            maxW="xl"
-            alignItems="stretch"
-            maxFiles={1}
-          >
+        <FormContainer>
+          <Input placeholder="Map name" name="map_name" />
+
+          <FileUpload.Root alignItems="stretch" maxFiles={1}>
             <FileUpload.HiddenInput name="file" />
             <FileUpload.Dropzone>
               <Icon size="md" color="fg.muted">
@@ -81,10 +96,11 @@ export default function Upload() {
             </FileUpload.Dropzone>
             <FileUpload.List />
           </FileUpload.Root>
-        </div>
-        <AppButton type="submit" size="md" disabled={status === "uploading"}>
-          {status === "uploading" ? "Uploading..." : "Load"}
-        </AppButton>
+
+          <AppButton type="submit" size="md" disabled={status === "uploading"}>
+            {status === "uploading" ? "Uploading..." : "Load"}
+          </AppButton>
+        </FormContainer>
       </form>
 
       {message && (

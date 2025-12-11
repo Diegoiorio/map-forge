@@ -71,6 +71,7 @@ SUPABASE_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 SUPABASE_URL=https://xxxxxxxxxxxxxx.supabase.co
 SUPABASE_PUBLISHABLE_KEY=xxxxxxxxxx
 SUPABASE_SERVICE_ROLE=xxxxxxxxxxxxxxxxxxxxx
+SUPABASE_MAP_BUCKET=map-forge
 ```
 
 ## Notes ------------------------------------------------------------------

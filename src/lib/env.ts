@@ -17,6 +17,7 @@ export const supabaseCredential = {
   SUPABASE_URL: process.env.SUPABASE_URL ?? "",
   SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY ?? "",
   SUPABASE_SERVICE_ROLE: process.env.SUPABASE_SERVICE_ROLE ?? "",
+  SUPABASE_MAP_BUCKET: process.env.SUPABASE_MAP_BUCKET ?? "",
 };
 
 export type ClientEnv = typeof clientEnv;
