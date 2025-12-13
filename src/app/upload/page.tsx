@@ -7,7 +7,7 @@ import TitleH1 from "../components/TitleH2";
 import AppButton from "../components/AppButton";
 import generatePublicMapUrl from "../../lib/generatePublicMapUrl";
 import FormContainer from "../components/FormContainer";
-import { saveMap } from "@/lib/mapDatabaseService";
+import { saveMap } from "@/lib/mapRepository";
 
 type Status = "idle" | "uploading" | "success" | "error";
 

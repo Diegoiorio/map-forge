@@ -11,6 +11,7 @@ interface MapData {
   created_at: string;
 }
 
+// Save a new map to the database
 export async function saveMap(
   mapName: string,
   mapUurl: string
@@ -22,6 +23,18 @@ export async function saveMap(
 
   if (error) {
     console.error("Supabase insert error:", error);
+    return null;
+  }
+
+  return data;
+}
+
+// Retrieve all maps from the database
+export async function getAllMaps(): Promise<MapData[] | null> {
+  const { data, error } = await supabaseClient.from(TABLE_NAME).select("*");
+
+  if (error) {
+    console.error("Supabase read error:", error);
     return null;
   }
 

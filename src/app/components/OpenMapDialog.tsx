@@ -1,14 +1,29 @@
-import { Box, Dialog, List, Portal } from "@chakra-ui/react";
+import { Box, Dialog, Link, List, Portal } from "@chakra-ui/react";
 import { useViewMode } from "../providers/ViewModeProvider";
 import CloseButton from "./CloseButton";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { getAllMaps } from "@/lib/mapRepository";
+
+type MapItem = {
+  id: number;
+  name: string;
+  url: string;
+};
 
 export default function OpenMapPopup() {
   const { viewMode, resetViewMode } = useViewMode();
+  const [mapList, setMapList] = useState<MapItem[]>([]);
+  const [loadingMap, setLoadingMap] = useState<boolean>(false);
   const boxRef = useRef<HTMLDivElement | null>(null);
   const dialogViewMode = "mapList";
   const title = "Your maps";
 
+  // Fetch saved maps from the database
+  const getSavedMaps = async () => {
+    return await getAllMaps();
+  };
+
+  // Close dialog on click outside
   useEffect(() => {
     if (viewMode !== dialogViewMode) return;
 
@@ -29,12 +44,45 @@ export default function OpenMapPopup() {
     };
   }, [viewMode, resetViewMode]);
 
-  const content = (
-    <List.Root>
-      <List.Item>Item 1</List.Item>
-      <List.Item>Item 2</List.Item>
-    </List.Root>
-  );
+  // Fetch maps when dialog opens
+  useEffect(() => {
+    if (viewMode !== dialogViewMode) return;
+
+    const load = async () => {
+      setLoadingMap(true);
+      const maps = await getSavedMaps();
+
+      if (maps) {
+        setMapList(maps);
+      }
+      setLoadingMap(false);
+    };
+
+    load();
+  }, [viewMode]);
+
+  const content = () => {
+    return loadingMap ? (
+      "Loading maps..."
+    ) : mapList.length === 0 ? (
+      "No maps found."
+    ) : (
+      <Box>
+        <List.Root as="ol" unstyled>
+          {mapList.map((map) => (
+            <List.Item
+              as="li"
+              key={map.id}
+              mb={2}
+              _hover={{ textDecoration: "none", opacity: 0.7 }}
+            >
+              <Link href="./">{map.name}</Link>
+            </List.Item>
+          ))}
+        </List.Root>
+      </Box>
+    );
+  };
 
   if (viewMode !== "mapList") return null;
 
@@ -54,7 +102,7 @@ export default function OpenMapPopup() {
                   <Dialog.Title>{title}</Dialog.Title>
                 </Dialog.Header>
               )}
-              <Dialog.Body spaceY="4">{content}</Dialog.Body>
+              <Dialog.Body spaceY="4">{content()}</Dialog.Body>
             </Dialog.Content>
           </Dialog.Positioner>
         </Portal>
