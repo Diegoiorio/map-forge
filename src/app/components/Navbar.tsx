@@ -4,6 +4,7 @@ import { Box, Flex, Icon, Collapsible, useDisclosure } from "@chakra-ui/react";
 import { Link } from "@chakra-ui/react";
 import { useState } from "react";
 import { LuChevronDown, LuChevronUp } from "react-icons/lu";
+import { useViewMode } from "../providers/ViewModeProvider";
 
 interface NavLink {
   href: string;
@@ -19,6 +20,7 @@ const NAV_LINKS: NavLink[] = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(true);
+  const { resetViewMode } = useViewMode();
 
   return (
     <Box mb="4">
@@ -45,9 +47,7 @@ export default function Navbar() {
                     <Box
                       key={link.href}
                       as="button"
-                      onClick={() => {
-                        console.log("Open map clicked"); // [TODO] Implement open map functionality
-                      }}
+                      onClick={() => resetViewMode("mapList")}
                       _hover={{ textDecoration: "none", opacity: 0.7 }}
                       style={{ marginRight: 16 }}
                     >
