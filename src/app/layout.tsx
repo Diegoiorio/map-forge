@@ -29,7 +29,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ClientChakraProvider>
-          <Navbar />
           <MainContainer>{children}</MainContainer>
         </ClientChakraProvider>
       </body>
