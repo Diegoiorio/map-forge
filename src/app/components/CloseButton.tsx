@@ -11,7 +11,7 @@ export default function CloseButton({
 }: CloseButtonProps) {
   return (
     <HStack>
-      <ChakraCloseButton variant={variant} onClick={onClick} />
+      <ChakraCloseButton size={"2xs"} variant={variant} onClick={onClick} />
     </HStack>
   );
 }

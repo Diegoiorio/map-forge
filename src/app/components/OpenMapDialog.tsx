@@ -1,8 +1,9 @@
-import { Box, Dialog, Link, List, Portal } from "@chakra-ui/react";
+import { Box, Dialog, Flex, Link, List, Portal } from "@chakra-ui/react";
 import { useViewMode } from "../providers/ViewModeProvider";
 import CloseButton from "./CloseButton";
 import { useEffect, useRef, useState } from "react";
 import { getAllMaps } from "@/lib/mapRepository";
+import SpinnerLoader from "./SpinnerLoader";
 
 type MapItem = {
   id: number;
@@ -14,7 +15,7 @@ export default function OpenMapPopup() {
   const { viewMode, resetViewMode } = useViewMode();
   const [mapList, setMapList] = useState<MapItem[]>([]);
   const [loadingMap, setLoadingMap] = useState<boolean>(false);
-  const boxRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
   const dialogViewMode = "mapList";
   const title = "Your maps";
 
@@ -28,13 +29,11 @@ export default function OpenMapPopup() {
     if (viewMode !== dialogViewMode) return;
 
     const handlePointerDown = (event: PointerEvent) => {
-      const el = boxRef.current;
+      const el = contentRef.current;
       if (!el) return;
+      if (el.contains(event.target as Node)) return;
 
-      // Handle click outside
-      if (!el.contains(event.target as Node)) {
-        resetViewMode(dialogViewMode);
-      }
+      resetViewMode(dialogViewMode);
     };
 
     document.addEventListener("pointerdown", handlePointerDown, true);
@@ -63,7 +62,7 @@ export default function OpenMapPopup() {
 
   const content = () => {
     return loadingMap ? (
-      "Loading maps..."
+      <SpinnerLoader />
     ) : mapList.length === 0 ? (
       "No maps found."
     ) : (
@@ -76,7 +75,7 @@ export default function OpenMapPopup() {
               mb={2}
               _hover={{ textDecoration: "none", opacity: 0.7 }}
             >
-              <Link href="./">{map.name}</Link>
+              <Link href={`/map/${map.id}`}>{map.name}</Link>
             </List.Item>
           ))}
         </List.Root>
@@ -87,12 +86,12 @@ export default function OpenMapPopup() {
   if (viewMode !== "mapList") return null;
 
   return (
-    <div ref={boxRef}>
+    <div>
       <Dialog.Root open={viewMode === dialogViewMode}>
         <Portal>
           <Dialog.Backdrop />
           <Dialog.Positioner>
-            <Dialog.Content>
+            <Dialog.Content ref={contentRef}>
               <Box className="absolute right-0" m={4}>
                 <CloseButton onClick={() => resetViewMode(dialogViewMode)} />
               </Box>
