@@ -16,7 +16,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import SpinnerLoader from "./SpinnerLoader";
+import SpinnerLoader from "../SpinnerLoader";
+import SetInitialView from "./MapImageViewerIntialView";
 delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)
   ._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -170,13 +171,15 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
           bounds={bounds}
           // Fit image into viewport
           style={{ height: "100%", width: "100%" }}
-          zoomControl={true}
+          zoomControl={false}
           minZoom={-2}
           maxZoom={4}
           // Prevent panning infinitely far away
           maxBounds={bounds}
           maxBoundsViscosity={1.0}
         >
+          <SetInitialView bounds={bounds} extraZoom={0.5} />
+
           <ZoomControl position="bottomright" />
 
           <ImageOverlay url={imageUrl} bounds={bounds} />

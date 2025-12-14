@@ -1,5 +1,5 @@
 import { getMapById } from "@/lib/mapRepository";
-import MapImageViewer from "@/app/components/MapImageViewer";
+import MapImageViewer from "@/app/components/MapViewer/MapImageViewer";
 
 type MapPageProps = {
   params: Promise<{ id: string }>;
