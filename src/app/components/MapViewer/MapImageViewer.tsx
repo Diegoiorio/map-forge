@@ -1,28 +1,58 @@
 "use client";
 
 import { Box, Button, Dialog, Field, Input, Textarea } from "@chakra-ui/react";
-import {
-  MapContainer,
-  ImageOverlay,
-  Marker,
-  Popup,
-  ZoomControl,
-  useMapEvents,
-} from "react-leaflet";
-import L, { LatLngBoundsExpression } from "leaflet";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { MarkerData, Props } from "./MapViewerTypes";
 import SpinnerLoader from "../SpinnerLoader";
+import { MarkerData, Props } from "./MapViewerTypes";
 import SetInitialView from "./MapImageViewerIntialView";
 import AddMarkerClickHandler from "./AddMarkerClickHandler";
 import MapNameLabel from "./MapNameLabel";
-import SetMapMarkerIcons from "./MapMarkerIcons";
+
+type LeafletModule = typeof import("leaflet");
+type ReactLeafletModule = typeof import("react-leaflet");
 
 export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
+  // Load Leaflet + react-leaflet only on client
+  const [leaflet, setLeaflet] = useState<LeafletModule | null>(null);
+  const [rl, setRl] = useState<ReactLeafletModule | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      const [Lmod, RLmod] = await Promise.all([
+        import("leaflet"),
+        import("react-leaflet"),
+      ]);
+
+      if (cancelled) return;
+
+      // Optional: marker icon fix here (client-only)
+      // (do it here instead of a separate module to avoid SSR issues)
+      // delete (Lmod.Icon.Default.prototype as any)._getIconUrl;
+      // Lmod.Icon.Default.mergeOptions({ ... });
+      // after importing leaflet:
+      delete (Lmod.Icon.Default.prototype as any)._getIconUrl;
+
+      Lmod.Icon.Default.mergeOptions({
+        iconRetinaUrl: "/leaflet/marker-icon-2x.png",
+        iconUrl: "/leaflet/marker-icon.png",
+        shadowUrl: "/leaflet/marker-shadow.png",
+      });
+
+      setLeaflet(Lmod);
+      setRl(RLmod);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // Image natural size
   const [imgSize, setImgSize] = useState<{ w: number; h: number } | null>(null);
 
-  // Markers state (replace with your DB fetch/save)
+  // Markers state
   const [markers, setMarkers] = useState<MarkerData[]>([]);
 
   // Add-marker dialog state
@@ -31,10 +61,10 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  const dialogViewMode = true; // you can connect this to your ViewModeProvider if you want
-  const enableAddOnClick = true; // you can add a toggle button if you want
+  const dialogViewMode = true;
+  const enableAddOnClick = true;
 
-  // Load image natural size (so bounds match pixels)
+  // Load image natural size
   useEffect(() => {
     let cancelled = false;
 
@@ -45,7 +75,6 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
     };
     img.onerror = () => {
       if (cancelled) return;
-      // fallback if image fails to load
       setImgSize({ w: 2000, h: 2000 });
     };
     img.src = imageUrl;
@@ -55,29 +84,20 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
     };
   }, [imageUrl]);
 
-  /*
-   * Initial map setup
-   * Fetch markers for this map (replace with your API/DB)
-   * Set Map marker icons
-   */
   useEffect(() => {
-    SetMapMarkerIcons();
     // TODO: load markers by mapId
-    // fetch(`/api/maps/${mapId}/markers`) ...
-    setMarkers([]); // start empty for now
+    setMarkers([]);
   }, [mapId]);
 
-  // Compute image bounds for Leaflet
-  const bounds: LatLngBoundsExpression | null = useMemo(() => {
+  // Bounds (needs only numbers, not Leaflet types)
+  const bounds = useMemo(() => {
     if (!imgSize) return null;
-    // [[y0, x0], [y1, x1]] == [[0,0],[height,width]]
     return [
       [0, 0],
       [imgSize.h, imgSize.w],
-    ];
+    ] as const;
   }, [imgSize]);
 
-  // Handle map click to pick a point for new marker
   const onPickPoint = (x: number, y: number) => {
     pickedRef.current = { x, y };
     setTitle("");
@@ -85,7 +105,6 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
     setAddOpen(true);
   };
 
-  // Handle creating the new marker
   const onCreateMarker = () => {
     const picked = pickedRef.current;
     if (!picked) return;
@@ -100,41 +119,40 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
     };
 
     setMarkers((prev) => [...prev, newMarker]);
-
-    // TODO: persist to DB with mapId
-    // await fetch("/api/markers", { method: "POST", body: JSON.stringify({ mapId, ...newMarker }) })
-
     setAddOpen(false);
     pickedRef.current = null;
   };
 
-  // Show loader until we have image size and bounds
-  if (!bounds) {
-    return <SpinnerLoader />;
-  }
+  // Wait until BOTH modules + bounds are ready
+  if (!leaflet || !rl || !bounds) return <SpinnerLoader />;
+
+  const {
+    MapContainer,
+    ImageOverlay,
+    Marker,
+    Popup,
+    ZoomControl,
+    useMapEvents,
+  } = rl;
 
   return (
-    <Box position={"absolute"} top={0} left={0} right={0}>
+    <Box position="absolute" top={0} left={0} right={0}>
       <MapNameLabel imageName={imageName} />
 
       <Box overflow="hidden" h="100vh" w="100vw">
         <MapContainer
-          crs={L.CRS.Simple}
-          bounds={bounds}
-          // Fit image into viewport
+          crs={leaflet.CRS.Simple}
+          bounds={bounds as any}
           style={{ height: "100%", width: "100%" }}
           zoomControl={false}
           minZoom={-2}
           maxZoom={4}
-          // Prevent panning infinitely far away
-          maxBounds={bounds}
+          maxBounds={bounds as any}
           maxBoundsViscosity={1.0}
         >
-          <SetInitialView bounds={bounds} extraZoom={0.5} />
-
+          <SetInitialView bounds={bounds as any} extraZoom={0.5} />
           <ZoomControl position="bottomright" />
-
-          <ImageOverlay url={imageUrl} bounds={bounds} />
+          <ImageOverlay url={imageUrl} bounds={bounds as any} />
 
           <AddMarkerClickHandler
             enabled={dialogViewMode && enableAddOnClick}
@@ -143,7 +161,7 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
           />
 
           {markers.map((m) => (
-            <Marker key={m.id} position={[m.y, m.x]}>
+            <Marker key={m.id} position={[m.y, m.x] as any}>
               <Popup>
                 <Box fontWeight="600">{m.title}</Box>
                 {m.description ? <Box mt="2">{m.description}</Box> : null}
@@ -156,7 +174,6 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
         </MapContainer>
       </Box>
 
-      {/* Add Marker Dialog */}
       <Dialog.Root open={addOpen} onOpenChange={(e) => setAddOpen(e.open)}>
         <Dialog.Backdrop />
         <Dialog.Positioner>
