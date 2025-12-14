@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Flex, Icon, Collapsible, useDisclosure } from "@chakra-ui/react";
+import { Box, Flex, Icon, Collapsible } from "@chakra-ui/react";
 import { Link } from "@chakra-ui/react";
 import { useState } from "react";
 import { LuChevronDown, LuChevronUp } from "react-icons/lu";

@@ -1,5 +1,5 @@
 import { getMapById } from "@/lib/mapRepository";
-import MapImageViewer from "@/app/components/MapViewer/MapImageViewer";
+import MapPageClient from "./MapPageClient";
 
 type MapPageProps = {
   params: Promise<{ id: string }>;
@@ -14,6 +14,6 @@ export default async function MapPage({ params }: MapPageProps) {
   if (!map) return <div>Map not found.</div>;
 
   return (
-    <MapImageViewer mapId={map.id} imageUrl={map.url} imageName={map.name} />
+    <MapPageClient mapId={map.id} imageUrl={map.url} imageName={map.name} />
   );
 }
