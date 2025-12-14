@@ -16,18 +16,7 @@ import SpinnerLoader from "../SpinnerLoader";
 import SetInitialView from "./MapImageViewerIntialView";
 import AddMarkerClickHandler from "./AddMarkerClickHandler";
 import MapNameLabel from "./MapNameLabel";
-
-// Fix Leaflet's default icon paths
-import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
-delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)
-  ._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: markerIcon2x,
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
-});
+import SetMapMarkerIcons from "./MapMarkerIcons";
 
 export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
   // Image natural size
@@ -66,8 +55,13 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
     };
   }, [imageUrl]);
 
-  // Fetch markers for this map (replace with your API/DB)
+  /*
+   * Initial map setup
+   * Fetch markers for this map (replace with your API/DB)
+   * Set Map marker icons
+   */
   useEffect(() => {
+    SetMapMarkerIcons();
     // TODO: load markers by mapId
     // fetch(`/api/maps/${mapId}/markers`) ...
     setMarkers([]); // start empty for now
