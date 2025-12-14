@@ -13,5 +13,7 @@ export default async function MapPage({ params }: MapPageProps) {
   const map = await getMapById(Number(id));
   if (!map) return <div>Map not found.</div>;
 
-  return <MapImageViewer mapId={map.id} imageUrl={map.url} />;
+  return (
+    <MapImageViewer mapId={map.id} imageUrl={map.url} imageName={map.name} />
+  );
 }

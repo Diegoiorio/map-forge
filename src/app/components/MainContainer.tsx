@@ -7,7 +7,7 @@ import OpenMapPopup from "./OpenMapDialog";
 
 export default function MainContainer(props: { children: React.ReactNode }) {
   return (
-    <Container>
+    <Container maxW="100vw" p={0} m={0} minH="100vh">
       <ViewModeProvider>
         <Navbar />
         <OpenMapPopup />

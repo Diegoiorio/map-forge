@@ -23,7 +23,7 @@ export default function Navbar() {
   const { resetViewMode } = useViewMode();
 
   return (
-    <Box mb="4">
+    <Box mb="4" position={"relative"} zIndex={1000}>
       <Collapsible.Root open={open} onOpenChange={(e) => setOpen(e.open)}>
         <Collapsible.Content>
           <Box
@@ -34,6 +34,7 @@ export default function Navbar() {
             borderWidth="1px"
             borderBottomEndRadius={"3xl"}
             borderTopLeftRadius={"3xl"}
+            backgroundColor="blackAlpha.900"
           >
             <Flex
               gap="0"
@@ -83,6 +84,7 @@ export default function Navbar() {
               maxH={"4"}
               borderBottomRadius={"4xl"}
               cursor={"pointer"}
+              backgroundColor="blackAlpha.900"
             >
               <Icon size="sm" mt="-3">
                 {open ? <LuChevronUp /> : <LuChevronDown />}

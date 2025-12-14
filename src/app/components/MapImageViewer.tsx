@@ -12,18 +12,20 @@ import {
 import L, { LatLngBoundsExpression } from "leaflet";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-// Optional: fix default Leaflet marker icons in bundlers (Next)
-// If your markers appear as broken images, uncomment and ensure these paths resolve.
-// import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
-// import markerIcon from "leaflet/dist/images/marker-icon.png";
-// import markerShadow from "leaflet/dist/images/marker-shadow.png";
-// delete (L.Icon.Default.prototype as any)._getIconUrl;
-// L.Icon.Default.mergeOptions({
-//   iconRetinaUrl: markerIcon2x.src,
-//   iconUrl: markerIcon.src,
-//   shadowUrl: markerShadow.src,
-// });
+// Fix Leaflet's default icon paths
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import SpinnerLoader from "./SpinnerLoader";
+delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)
+  ._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
 
+// Marker data type
 type MarkerData = {
   id: string;
   x: number; // pixel X on the original image
@@ -32,11 +34,14 @@ type MarkerData = {
   description?: string;
 };
 
+// Props for MapImageViewer
 type Props = {
   mapId: number;
   imageUrl: string;
+  imageName: string;
 };
 
+// Component to handle map clicks for adding markers
 function ClickToAddMarker({
   enabled,
   onPick,
@@ -58,7 +63,7 @@ function ClickToAddMarker({
   return null;
 }
 
-export default function MapImageViewer({ mapId, imageUrl }: Props) {
+export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
   const [imgSize, setImgSize] = useState<{ w: number; h: number } | null>(null);
 
   // Markers state (replace with your DB fetch/save)
@@ -140,22 +145,32 @@ export default function MapImageViewer({ mapId, imageUrl }: Props) {
   };
 
   if (!bounds) {
-    return <Box p="4">Loading map...</Box>;
+    return <SpinnerLoader />;
   }
 
   return (
-    <Box>
-      <Box fontSize="sm" opacity={0.8} mb="2">
-        Map #{mapId} — click to add marker
+    <Box position={"absolute"} top={0} left={0} right={0}>
+      <Box
+        fontSize="sm"
+        opacity={0.8}
+        position={"absolute"}
+        top={5}
+        left={10}
+        zIndex={500}
+        pl={3}
+        pr={3}
+        className="bg-black"
+      >
+        {imageName}
       </Box>
 
-      <Box borderWidth="1px" borderRadius="lg" overflow="hidden" h="70vh">
+      <Box overflow="hidden" h="100vh" w="100vw">
         <MapContainer
           crs={L.CRS.Simple}
           bounds={bounds}
           // Fit image into viewport
           style={{ height: "100%", width: "100%" }}
-          zoomControl={false}
+          zoomControl={true}
           minZoom={-2}
           maxZoom={4}
           // Prevent panning infinitely far away
