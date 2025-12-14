@@ -11,13 +11,16 @@ import {
 } from "react-leaflet";
 import L, { LatLngBoundsExpression } from "leaflet";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { MarkerData, Props } from "./MapViewerTypes";
+import SpinnerLoader from "../SpinnerLoader";
+import SetInitialView from "./MapImageViewerIntialView";
+import AddMarkerClickHandler from "./AddMarkerClickHandler";
+import MapNameLabel from "./MapNameLabel";
 
 // Fix Leaflet's default icon paths
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import SpinnerLoader from "../SpinnerLoader";
-import SetInitialView from "./MapImageViewerIntialView";
 delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)
   ._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -26,45 +29,8 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-// Marker data type
-type MarkerData = {
-  id: string;
-  x: number; // pixel X on the original image
-  y: number; // pixel Y on the original image
-  title: string;
-  description?: string;
-};
-
-// Props for MapImageViewer
-type Props = {
-  mapId: number;
-  imageUrl: string;
-  imageName: string;
-};
-
-// Component to handle map clicks for adding markers
-function ClickToAddMarker({
-  enabled,
-  onPick,
-}: {
-  enabled: boolean;
-  onPick: (x: number, y: number) => void;
-}) {
-  useMapEvents({
-    click(e) {
-      if (!enabled) return;
-
-      // In CRS.Simple, Leaflet uses [lat, lng] but they are just [y, x]
-      const y = Math.round(e.latlng.lat);
-      const x = Math.round(e.latlng.lng);
-      onPick(x, y);
-    },
-  });
-
-  return null;
-}
-
 export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
+  // Image natural size
   const [imgSize, setImgSize] = useState<{ w: number; h: number } | null>(null);
 
   // Markers state (replace with your DB fetch/save)
@@ -100,13 +66,14 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
     };
   }, [imageUrl]);
 
-  // Example: fetch markers for this map (replace with your API/DB)
+  // Fetch markers for this map (replace with your API/DB)
   useEffect(() => {
     // TODO: load markers by mapId
     // fetch(`/api/maps/${mapId}/markers`) ...
     setMarkers([]); // start empty for now
   }, [mapId]);
 
+  // Compute image bounds for Leaflet
   const bounds: LatLngBoundsExpression | null = useMemo(() => {
     if (!imgSize) return null;
     // [[y0, x0], [y1, x1]] == [[0,0],[height,width]]
@@ -116,6 +83,7 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
     ];
   }, [imgSize]);
 
+  // Handle map click to pick a point for new marker
   const onPickPoint = (x: number, y: number) => {
     pickedRef.current = { x, y };
     setTitle("");
@@ -123,6 +91,7 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
     setAddOpen(true);
   };
 
+  // Handle creating the new marker
   const onCreateMarker = () => {
     const picked = pickedRef.current;
     if (!picked) return;
@@ -145,25 +114,14 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
     pickedRef.current = null;
   };
 
+  // Show loader until we have image size and bounds
   if (!bounds) {
     return <SpinnerLoader />;
   }
 
   return (
     <Box position={"absolute"} top={0} left={0} right={0}>
-      <Box
-        fontSize="sm"
-        opacity={0.8}
-        position={"absolute"}
-        top={5}
-        left={10}
-        zIndex={500}
-        pl={3}
-        pr={3}
-        className="bg-black"
-      >
-        {imageName}
-      </Box>
+      <MapNameLabel imageName={imageName} />
 
       <Box overflow="hidden" h="100vh" w="100vw">
         <MapContainer
@@ -184,9 +142,10 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
 
           <ImageOverlay url={imageUrl} bounds={bounds} />
 
-          <ClickToAddMarker
+          <AddMarkerClickHandler
             enabled={dialogViewMode && enableAddOnClick}
             onPick={onPickPoint}
+            useMapEvents={useMapEvents}
           />
 
           {markers.map((m) => (
