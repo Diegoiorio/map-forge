@@ -1,15 +1,20 @@
-// Marker data type
-export type MarkerData = {
-  id: string;
-  x: number; // pixel X on the original image
-  y: number; // pixel Y on the original image
-  title: string;
-  description?: string;
-};
-
-// Props for MapImageViewer
+// Props for MapImageViewer component
 export type Props = {
   mapId: number;
   imageUrl: string;
   imageName: string;
+};
+
+// Marker data structure
+export type MarkerData = {
+  id: string;
+  x: number;
+  y: number;
+  title: string;
+  description?: string;
+};
+
+// Used to remove Leaflet internal marker url resolver without "any"
+export type LeafletDefaultIconProto = {
+  _getIconUrl?: unknown;
 };

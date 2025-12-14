@@ -3,16 +3,17 @@
 import { Box, Button, Dialog, Field, Input, Textarea } from "@chakra-ui/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import SpinnerLoader from "../SpinnerLoader";
-import { MarkerData, Props } from "./MapViewerTypes";
+import { MarkerData, Props, LeafletDefaultIconProto } from "./MapViewerTypes";
 import SetInitialView from "./MapImageViewerIntialView";
 import AddMarkerClickHandler from "./AddMarkerClickHandler";
 import MapNameLabel from "./MapNameLabel";
+
+import type { LatLngBoundsExpression, LatLngExpression } from "leaflet";
 
 type LeafletModule = typeof import("leaflet");
 type ReactLeafletModule = typeof import("react-leaflet");
 
 export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
-  // Load Leaflet + react-leaflet only on client
   const [leaflet, setLeaflet] = useState<LeafletModule | null>(null);
   const [rl, setRl] = useState<ReactLeafletModule | null>(null);
 
@@ -27,12 +28,10 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
 
       if (cancelled) return;
 
-      // Optional: marker icon fix here (client-only)
-      // (do it here instead of a separate module to avoid SSR issues)
-      // delete (Lmod.Icon.Default.prototype as any)._getIconUrl;
-      // Lmod.Icon.Default.mergeOptions({ ... });
-      // after importing leaflet:
-      delete (Lmod.Icon.Default.prototype as any)._getIconUrl;
+      // Fix default Leaflet marker icons in Next
+      const proto = Lmod.Icon.Default
+        .prototype as unknown as LeafletDefaultIconProto;
+      delete proto._getIconUrl;
 
       Lmod.Icon.Default.mergeOptions({
         iconRetinaUrl: "/leaflet/marker-icon-2x.png",
@@ -89,13 +88,13 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
     setMarkers([]);
   }, [mapId]);
 
-  // Bounds (needs only numbers, not Leaflet types)
-  const bounds = useMemo(() => {
+  // Strongly typed bounds for Leaflet
+  const bounds: LatLngBoundsExpression | null = useMemo(() => {
     if (!imgSize) return null;
     return [
       [0, 0],
       [imgSize.h, imgSize.w],
-    ] as const;
+    ];
   }, [imgSize]);
 
   const onPickPoint = (x: number, y: number) => {
@@ -123,7 +122,6 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
     pickedRef.current = null;
   };
 
-  // Wait until BOTH modules + bounds are ready
   if (!leaflet || !rl || !bounds) return <SpinnerLoader />;
 
   const {
@@ -142,17 +140,19 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
       <Box overflow="hidden" h="100vh" w="100vw">
         <MapContainer
           crs={leaflet.CRS.Simple}
-          bounds={bounds as any}
+          bounds={bounds}
           style={{ height: "100%", width: "100%" }}
           zoomControl={false}
           minZoom={-2}
           maxZoom={4}
-          maxBounds={bounds as any}
+          maxBounds={bounds}
           maxBoundsViscosity={1.0}
         >
-          <SetInitialView bounds={bounds as any} extraZoom={0.5} />
+          <SetInitialView bounds={bounds} extraZoom={0.5} />
+
           <ZoomControl position="bottomright" />
-          <ImageOverlay url={imageUrl} bounds={bounds as any} />
+
+          <ImageOverlay url={imageUrl} bounds={bounds} />
 
           <AddMarkerClickHandler
             enabled={dialogViewMode && enableAddOnClick}
@@ -160,17 +160,21 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
             useMapEvents={useMapEvents}
           />
 
-          {markers.map((m) => (
-            <Marker key={m.id} position={[m.y, m.x] as any}>
-              <Popup>
-                <Box fontWeight="600">{m.title}</Box>
-                {m.description ? <Box mt="2">{m.description}</Box> : null}
-                <Box mt="2" fontSize="xs" opacity={0.7}>
-                  x: {m.x}, y: {m.y}
-                </Box>
-              </Popup>
-            </Marker>
-          ))}
+          {markers.map((m) => {
+            const pos: LatLngExpression = [m.y, m.x];
+
+            return (
+              <Marker key={m.id} position={pos}>
+                <Popup>
+                  <Box fontWeight="600">{m.title}</Box>
+                  {m.description ? <Box mt="2">{m.description}</Box> : null}
+                  <Box mt="2" fontSize="xs" opacity={0.7}>
+                    x: {m.x}, y: {m.y}
+                  </Box>
+                </Popup>
+              </Marker>
+            );
+          })}
         </MapContainer>
       </Box>
 
