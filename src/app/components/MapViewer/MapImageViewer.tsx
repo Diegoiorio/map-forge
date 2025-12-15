@@ -9,19 +9,7 @@ import AddMarkerClickHandler from "./AddMarkerClickHandler";
 import MapNameLabel from "./MapNameLabel";
 
 import type { LatLngBoundsExpression, LatLngExpression } from "leaflet";
-import Editor, {
-  Toolbar,
-  BtnBold,
-  BtnItalic,
-  BtnUnderline,
-  BtnStrikeThrough,
-  BtnLink,
-  BtnNumberedList,
-  BtnBulletList,
-  BtnUndo,
-  BtnRedo,
-  BtnClearFormatting,
-} from "react-simple-wysiwyg";
+import TextEditor from "../TextEditor";
 
 type LeafletModule = typeof import("leaflet");
 type ReactLeafletModule = typeof import("react-leaflet");
@@ -146,10 +134,6 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
     useMapEvents,
   } = rl;
 
-  const Sep = () => (
-    <span style={{ margin: "0 4px", opacity: 0.4, color: "#444" }}>|</span>
-  );
-
   return (
     <Box position="absolute" top={0} left={0} right={0}>
       <MapNameLabel imageName={imageName} />
@@ -195,7 +179,12 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
         </MapContainer>
       </Box>
 
-      <Dialog.Root open={addOpen} onOpenChange={(e) => setAddOpen(e.open)}>
+      <Dialog.Root
+        size={"lg"}
+        scrollBehavior="inside"
+        open={addOpen}
+        onOpenChange={(e) => setAddOpen(e.open)}
+      >
         <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content>
@@ -222,33 +211,10 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
 
               <Field.Root>
                 <Field.Label>Description</Field.Label>
-                <Editor
-                  value={description}
-                  placeholder="Area description"
-                  onChange={(e) => setDescription(e.target.value)}
-                  style={{
-                    width: "100%",
-                    maxWidth: "100%",
-                    minWidth: "100%",
-                    boxSizing: "border-box",
-                  }}
-                >
-                  <Toolbar>
-                    <BtnUndo />
-                    <BtnRedo />
-                    <Sep />
-                    <BtnBold />
-                    <BtnItalic />
-                    <BtnUnderline />
-                    <BtnStrikeThrough />
-                    <Sep />
-                    <BtnBulletList />
-                    <BtnNumberedList />
-                    <Sep />
-                    <BtnLink />
-                    <BtnClearFormatting />
-                  </Toolbar>
-                </Editor>
+                <TextEditor
+                  description={description}
+                  setDescription={setDescription}
+                />
               </Field.Root>
             </Dialog.Body>
 

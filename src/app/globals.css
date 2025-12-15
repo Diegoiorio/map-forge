@@ -35,12 +35,106 @@ a {
   }
 }
 
+/* il contenuto vero è dentro .rsw-ce (content editable) */
 .rsw-editor {
-  min-height: 250px !important;
+  min-height: 60vw !important;
   width: 100%;
   background-color: var(--background);
   color: var(--foreground);
   border: 1px solid #27272a !important;
+}
+
+/* EDITOR STYLES */
+.rsw-editor .rsw-ce ul {
+  list-style: disc !important;
+  padding-left: 1.25rem !important;
+  margin: 0.5rem 0 !important;
+}
+.rsw-editor .rsw-ce ol {
+  list-style: decimal !important;
+  padding-left: 1.25rem !important;
+  margin: 0.5rem 0 !important;
+}
+.rsw-editor .rsw-ce li {
+  margin: 0.25rem 0 !important;
+}
+
+.rsw-editor .rsw-ce a {
+  text-decoration: underline !important;
+}
+
+.rsw-editor .rsw-ce i,
+.rsw-editor .rsw-ce em {
+  font-style: italic !important;
+}
+
+.rsw-editor .rsw-ce u {
+  text-decoration: underline !important;
+}
+.rsw-editor .rsw-ce s,
+.rsw-editor .rsw-ce strike {
+  text-decoration: line-through !important;
+}
+
+.rsw-editor.align-left .rsw-ce {
+  text-align: left !important;
+}
+
+.rsw-editor.align-center .rsw-ce {
+  text-align: center !important;
+}
+
+.rsw-editor.align-right .rsw-ce {
+  text-align: right !important;
+}
+
+.rsw-editor .rsw-ce h1 {
+  font-size: 1.6rem !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  margin: 0.75rem 0 0.5rem !important;
+}
+
+.rsw-editor .rsw-ce h2 {
+  font-size: 1.35rem !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+  margin: 0.75rem 0 0.5rem !important;
+}
+
+.rsw-editor .rsw-ce h3 {
+  font-size: 1.15rem !important;
+  font-weight: 600 !important;
+  line-height: 1.3 !important;
+  margin: 0.65rem 0 0.4rem !important;
+}
+
+.rsw-editor .rsw-ce h4 {
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+  margin: 0.6rem 0 0.35rem !important;
+}
+
+.rsw-editor .rsw-ce pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace !important;
+  font-size: 0.9rem !important;
+  line-height: 1.3 !important;
+
+  white-space: pre-wrap !important; /* wraps long lines */
+  word-break: break-word !important;
+
+  padding: 0.75rem 0.9rem !important;
+  margin: 0rem 0 !important;
+
+  border: 1px solid #414141 !important;
+  border-radius: 3px !important;
+  background: #2e2e2e !important;
+}
+
+.rsw-editor .rsw-ce pre code {
+  font-family: inherit !important;
 }
 
 @import "tailwindcss";
