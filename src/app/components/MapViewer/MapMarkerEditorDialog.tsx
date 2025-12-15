@@ -10,6 +10,7 @@ interface MapMarkerEditorDialogProps {
   setTitle: (title: string) => void;
   description: string;
   setDescription: (desc: string) => void;
+  isEditing: boolean;
 }
 
 export default function MapMarkerDialog(props: MapMarkerEditorDialogProps) {
@@ -24,7 +25,9 @@ export default function MapMarkerDialog(props: MapMarkerEditorDialogProps) {
       <Dialog.Positioner>
         <Dialog.Content>
           <Dialog.Header>
-            <Dialog.Title>Add marker</Dialog.Title>
+            <Dialog.Title>
+              {props.isEditing ? "Edit marker" : "Add marker"}
+            </Dialog.Title>
           </Dialog.Header>
 
           <Dialog.Body spaceY="4">

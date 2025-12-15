@@ -7,6 +7,7 @@ import { MarkerData, Props, LeafletDefaultIconProto } from "./MapViewerTypes";
 import SetInitialView from "./MapImageViewerIntialView";
 import AddMarkerClickHandler from "./AddMarkerClickHandler";
 import MapNameLabel from "./MapNameLabel";
+import { Button, Drawer } from "@chakra-ui/react";
 
 import type { LatLngBoundsExpression, LatLngExpression } from "leaflet";
 
@@ -62,8 +63,17 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedMarkerId, setSelectedMarkerId] = useState<string | null>(null);
+
+  const [editingMarkerId, setEditingMarkerId] = useState<string | null>(null);
+
   const dialogViewMode = true;
   const enableAddOnClick = true;
+
+  const selectedMarker = useMemo(() => {
+    return markers.find((m) => m.id === selectedMarkerId) ?? null;
+  }, [markers, selectedMarkerId]);
 
   // Load image natural size
   useEffect(() => {
@@ -100,17 +110,39 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
   }, [imgSize]);
 
   const onPickPoint = (x: number, y: number) => {
+    setEditingMarkerId(null);
     pickedRef.current = { x, y };
     setTitle("");
     setDescription("");
     setAddOpen(true);
   };
 
-  const onCreateMarker = () => {
+  const onSaveMarker = () => {
     const picked = pickedRef.current;
     if (!picked) return;
     if (!title.trim()) return;
 
+    // EDIT mode
+    if (editingMarkerId) {
+      setMarkers((prev) =>
+        prev.map((m) =>
+          m.id === editingMarkerId
+            ? {
+                ...m,
+                title: title.trim(),
+                description: description.trim() || undefined,
+              }
+            : m
+        )
+      );
+
+      setAddOpen(false);
+      setEditingMarkerId(null);
+      pickedRef.current = null;
+      return;
+    }
+
+    // CREATE mode
     const newMarker: MarkerData = {
       id: crypto.randomUUID(),
       x: picked.x,
@@ -126,14 +158,7 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
 
   if (!leaflet || !rl || !bounds) return <SpinnerLoader />;
 
-  const {
-    MapContainer,
-    ImageOverlay,
-    Marker,
-    Popup,
-    ZoomControl,
-    useMapEvents,
-  } = rl;
+  const { MapContainer, ImageOverlay, Marker, ZoomControl, useMapEvents } = rl;
 
   return (
     <Box position="absolute" top={0} left={0} right={0}>
@@ -166,15 +191,16 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
             const pos: LatLngExpression = [m.y, m.x];
 
             return (
-              <Marker key={m.id} position={pos}>
-                <Popup>
-                  <Box fontWeight="600">{m.title}</Box>
-                  {m.description ? <Box mt="2">{m.description}</Box> : null}
-                  <Box mt="2" fontSize="xs" opacity={0.7}>
-                    x: {m.x}, y: {m.y}
-                  </Box>
-                </Popup>
-              </Marker>
+              <Marker
+                key={m.id}
+                position={pos}
+                eventHandlers={{
+                  click: () => {
+                    setSelectedMarkerId(m.id);
+                    setDrawerOpen(true);
+                  },
+                }}
+              />
             );
           })}
         </MapContainer>
@@ -184,12 +210,103 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
         addOpen={addOpen}
         setAddOpen={setAddOpen}
         pickedRef={pickedRef}
-        onCreateMarker={onCreateMarker}
+        onCreateMarker={onSaveMarker}
         title={title}
         setTitle={setTitle}
         description={description}
         setDescription={setDescription}
+        isEditing={!!editingMarkerId}
       />
+
+      <Drawer.Root
+        open={drawerOpen}
+        onOpenChange={(e) => setDrawerOpen(e.open)}
+        size={"lg"}
+      >
+        <Drawer.Backdrop />
+        <Drawer.Positioner>
+          <Drawer.Content>
+            <Drawer.Header>
+              <Drawer.Title>Marker</Drawer.Title>
+            </Drawer.Header>
+
+            <Drawer.Body className="markerDescriptor">
+              {!selectedMarker ? (
+                <Box opacity={0.7}>No marker selected</Box>
+              ) : (
+                <>
+                  <Box fontSize="sm" opacity={0.8}>
+                    Coordinates: x={selectedMarker.x}, y={selectedMarker.y}
+                  </Box>
+
+                  <Box mt="3" fontWeight="700">
+                    <h1>{selectedMarker.title}</h1>
+                  </Box>
+
+                  {selectedMarker.description ? (
+                    <Box
+                      mt="2"
+                      // se description è HTML (wysiwyg), renderizzalo così:
+                      dangerouslySetInnerHTML={{
+                        __html: selectedMarker.description,
+                      }}
+                    />
+                  ) : (
+                    <Box mt="2" opacity={0.7}>
+                      No description
+                    </Box>
+                  )}
+                </>
+              )}
+            </Drawer.Body>
+
+            <Drawer.Footer gap="2">
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setDrawerOpen(false);
+                }}
+              >
+                Close
+              </Button>
+
+              <Button
+                onClick={() => {
+                  if (!selectedMarker) return;
+                  setEditingMarkerId(selectedMarker.id);
+                  // precompila il dialog come edit
+                  pickedRef.current = {
+                    x: selectedMarker.x,
+                    y: selectedMarker.y,
+                  };
+                  setTitle(selectedMarker.title);
+                  setDescription(selectedMarker.description ?? "");
+                  setAddOpen(true); // riuso MapMarkerDialog
+                }}
+                disabled={!selectedMarker}
+              >
+                Edit
+              </Button>
+
+              <Button
+                variant="solid"
+                onClick={() => {
+                  if (!selectedMarker) return;
+
+                  setMarkers((prev) =>
+                    prev.filter((m) => m.id !== selectedMarker.id)
+                  );
+                  setDrawerOpen(false);
+                  setSelectedMarkerId(null);
+                }}
+                disabled={!selectedMarker}
+              >
+                Delete
+              </Button>
+            </Drawer.Footer>
+          </Drawer.Content>
+        </Drawer.Positioner>
+      </Drawer.Root>
     </Box>
   );
 }
