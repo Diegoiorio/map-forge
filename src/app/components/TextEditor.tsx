@@ -9,8 +9,6 @@ import Editor, {
   BtnLink,
   BtnNumberedList,
   BtnBulletList,
-  BtnUndo,
-  BtnRedo,
   BtnClearFormatting,
   createButton,
 } from "react-simple-wysiwyg";
@@ -63,9 +61,6 @@ export default function TextEditor(TextEditorProps: TextEditorProps) {
       }}
     >
       <Toolbar>
-        {/*<BtnUndo />
-        <BtnRedo />
-        <Sep />*/}
         <BtnBold />
         <BtnItalic />
         <BtnUnderline />

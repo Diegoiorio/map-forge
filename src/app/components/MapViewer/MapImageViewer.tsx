@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button, Dialog, Field, Input, Textarea } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import SpinnerLoader from "../SpinnerLoader";
 import { MarkerData, Props, LeafletDefaultIconProto } from "./MapViewerTypes";
@@ -9,7 +9,8 @@ import AddMarkerClickHandler from "./AddMarkerClickHandler";
 import MapNameLabel from "./MapNameLabel";
 
 import type { LatLngBoundsExpression, LatLngExpression } from "leaflet";
-import TextEditor from "../TextEditor";
+
+import MapMarkerDialog from "./MapMarkerEditorDialog";
 
 type LeafletModule = typeof import("leaflet");
 type ReactLeafletModule = typeof import("react-leaflet");
@@ -179,56 +180,16 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
         </MapContainer>
       </Box>
 
-      <Dialog.Root
-        size={"lg"}
-        scrollBehavior="inside"
-        open={addOpen}
-        onOpenChange={(e) => setAddOpen(e.open)}
-      >
-        <Dialog.Backdrop />
-        <Dialog.Positioner>
-          <Dialog.Content>
-            <Dialog.Header>
-              <Dialog.Title>Add marker</Dialog.Title>
-            </Dialog.Header>
-
-            <Dialog.Body spaceY="4">
-              <Box fontSize="sm" opacity={0.8}>
-                Position:{" "}
-                {pickedRef.current
-                  ? `x=${pickedRef.current.x}, y=${pickedRef.current.y}`
-                  : "-"}
-              </Box>
-
-              <Field.Root required>
-                <Field.Label>Title</Field.Label>
-                <Input
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Dungeon entrance"
-                />
-              </Field.Root>
-
-              <Field.Root>
-                <Field.Label>Description</Field.Label>
-                <TextEditor
-                  description={description}
-                  setDescription={setDescription}
-                />
-              </Field.Root>
-            </Dialog.Body>
-
-            <Dialog.Footer gap="2">
-              <Button variant="ghost" onClick={() => setAddOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={onCreateMarker} disabled={!title.trim()}>
-                Save marker
-              </Button>
-            </Dialog.Footer>
-          </Dialog.Content>
-        </Dialog.Positioner>
-      </Dialog.Root>
+      <MapMarkerDialog
+        addOpen={addOpen}
+        setAddOpen={setAddOpen}
+        pickedRef={pickedRef}
+        onCreateMarker={onCreateMarker}
+        title={title}
+        setTitle={setTitle}
+        description={description}
+        setDescription={setDescription}
+      />
     </Box>
   );
 }
