@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Button, Dialog, Field, Input } from "@chakra-ui/react";
 import TextEditor from "../TextEditor";
 

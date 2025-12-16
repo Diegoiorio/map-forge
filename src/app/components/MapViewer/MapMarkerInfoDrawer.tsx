@@ -1,3 +1,5 @@
+"use client";
+
 import { Box, Button, Drawer } from "@chakra-ui/react";
 import { MarkerData } from "./MapViewerTypes";
 import { Dispatch, SetStateAction } from "react";

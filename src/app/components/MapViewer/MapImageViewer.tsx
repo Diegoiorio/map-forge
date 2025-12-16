@@ -4,14 +4,13 @@ import { Box } from "@chakra-ui/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import SpinnerLoader from "../SpinnerLoader";
 import { MarkerData, Props, LeafletDefaultIconProto } from "./MapViewerTypes";
-import SetInitialView from "./MapImageViewerIntialView";
-import AddMarkerClickHandler from "./AddMarkerClickHandler";
 import MapNameLabel from "./MapNameLabel";
 
-import type { LatLngBoundsExpression, LatLngExpression } from "leaflet";
+import type { LatLngBoundsExpression } from "leaflet";
 
 import MapMarkerDialog from "./MapMarkerEditorDialog";
 import MapMarkerInfoDrwer from "./MapMarkerInfoDrawer";
+import MapImageViewerContainer from "./MapImageViewerContainer";
 
 type LeafletModule = typeof import("leaflet");
 type ReactLeafletModule = typeof import("react-leaflet");
@@ -158,53 +157,24 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
 
   if (!leaflet || !rl || !bounds) return <SpinnerLoader />;
 
-  const { MapContainer, ImageOverlay, Marker, ZoomControl, useMapEvents } = rl;
+  const { useMapEvents } = rl;
 
   return (
     <Box position="absolute" top={0} left={0} right={0}>
       <MapNameLabel imageName={imageName} />
 
-      <Box overflow="hidden" h="100vh" w="100vw">
-        <MapContainer
-          crs={leaflet.CRS.Simple}
-          bounds={bounds}
-          style={{ height: "100%", width: "100%" }}
-          zoomControl={false}
-          minZoom={-2}
-          maxZoom={4}
-          maxBounds={bounds}
-          maxBoundsViscosity={1.0}
-        >
-          <SetInitialView bounds={bounds} extraZoom={0.5} />
-
-          <ZoomControl position="bottomright" />
-
-          <ImageOverlay url={imageUrl} bounds={bounds} />
-
-          <AddMarkerClickHandler
-            enabled={dialogViewMode && enableAddOnClick}
-            onPick={onPickPoint}
-            useMapEvents={useMapEvents}
-          />
-
-          {markers.map((m) => {
-            const pos: LatLngExpression = [m.y, m.x];
-
-            return (
-              <Marker
-                key={m.id}
-                position={pos}
-                eventHandlers={{
-                  click: () => {
-                    setSelectedMarkerId(m.id);
-                    setDrawerOpen(true);
-                  },
-                }}
-              />
-            );
-          })}
-        </MapContainer>
-      </Box>
+      <MapImageViewerContainer
+        leaflet={leaflet}
+        bounds={bounds}
+        imageUrl={imageUrl}
+        dialogViewMode={dialogViewMode}
+        enableAddOnClick={enableAddOnClick}
+        onPickPoint={onPickPoint}
+        useMapEvents={useMapEvents}
+        markers={markers}
+        setSelectedMarkerId={setSelectedMarkerId}
+        setDrawerOpen={setDrawerOpen}
+      />
 
       <MapMarkerDialog
         addOpen={addOpen}
