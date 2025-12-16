@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { LatLngBoundsExpression } from "leaflet";
 import type { MarkerData, LeafletDefaultIconProto } from "./MapViewerTypes";
+import { saveMrker } from "@/lib/markerRepository";
 
 type LeafletModule = typeof import("leaflet");
 type ReactLeafletModule = typeof import("react-leaflet");
@@ -174,6 +175,11 @@ export function useMapImageViewer({ mapId, imageUrl }: Args) {
       setAddOpen(false);
       setEditingMarkerId(null);
       pickedRef.current = null;
+
+      // [TODO] Update marker
+      mapId = mapId;
+      console.log(markers);
+
       return;
     }
 
@@ -188,6 +194,17 @@ export function useMapImageViewer({ mapId, imageUrl }: Args) {
 
     setMarkers((prev) => [...prev, newMarker]);
     setAddOpen(false);
+
+    // [TODO] Save marker
+    saveMrker(
+      newMarker.id,
+      mapId,
+      newMarker.x,
+      newMarker.y,
+      newMarker.title,
+      newMarker.description
+    );
+
     pickedRef.current = null;
   };
 

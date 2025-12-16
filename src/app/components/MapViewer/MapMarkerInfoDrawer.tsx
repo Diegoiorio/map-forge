@@ -3,6 +3,7 @@
 import { Box, Button, Drawer } from "@chakra-ui/react";
 import { MarkerData } from "./MapViewerTypes";
 import { Dispatch, SetStateAction } from "react";
+import { deleteMrker } from "@/lib/markerRepository";
 
 interface MapMarkerInfoDrwerProps {
   drawerOpen: boolean;
@@ -95,6 +96,8 @@ export default function MapMarkerInfoDrwer(props: MapMarkerInfoDrwerProps) {
               variant="solid"
               onClick={() => {
                 if (!props || !props.selectedMarker) return;
+
+                deleteMrker(props!.selectedMarker!.id);
 
                 props.setMarkers((prev) =>
                   prev.filter((m) => m.id !== props!.selectedMarker!.id)

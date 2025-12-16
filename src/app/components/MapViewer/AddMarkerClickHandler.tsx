@@ -1,3 +1,5 @@
+"use client";
+
 // Component to handle map clicks for adding markers
 type AddMarkerClickHandlerProps = {
   enabled: boolean;
