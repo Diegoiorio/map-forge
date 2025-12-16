@@ -7,11 +7,11 @@ import { MarkerData, Props, LeafletDefaultIconProto } from "./MapViewerTypes";
 import SetInitialView from "./MapImageViewerIntialView";
 import AddMarkerClickHandler from "./AddMarkerClickHandler";
 import MapNameLabel from "./MapNameLabel";
-import { Button, Drawer } from "@chakra-ui/react";
 
 import type { LatLngBoundsExpression, LatLngExpression } from "leaflet";
 
 import MapMarkerDialog from "./MapMarkerEditorDialog";
+import MapMarkerInfoDrwer from "./MapMarkerInfoDrawer";
 
 type LeafletModule = typeof import("leaflet");
 type ReactLeafletModule = typeof import("react-leaflet");
@@ -218,95 +218,18 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
         isEditing={!!editingMarkerId}
       />
 
-      <Drawer.Root
-        open={drawerOpen}
-        onOpenChange={(e) => setDrawerOpen(e.open)}
-        size={"lg"}
-      >
-        <Drawer.Backdrop />
-        <Drawer.Positioner>
-          <Drawer.Content>
-            <Drawer.Header>
-              <Drawer.Title>Marker</Drawer.Title>
-            </Drawer.Header>
-
-            <Drawer.Body className="markerDescriptor">
-              {!selectedMarker ? (
-                <Box opacity={0.7}>No marker selected</Box>
-              ) : (
-                <>
-                  <Box fontSize="sm" opacity={0.8}>
-                    Coordinates: x={selectedMarker.x}, y={selectedMarker.y}
-                  </Box>
-
-                  <Box mt="3" fontWeight="700">
-                    <h1>{selectedMarker.title}</h1>
-                  </Box>
-
-                  {selectedMarker.description ? (
-                    <Box
-                      mt="2"
-                      // se description è HTML (wysiwyg), renderizzalo così:
-                      dangerouslySetInnerHTML={{
-                        __html: selectedMarker.description,
-                      }}
-                    />
-                  ) : (
-                    <Box mt="2" opacity={0.7}>
-                      No description
-                    </Box>
-                  )}
-                </>
-              )}
-            </Drawer.Body>
-
-            <Drawer.Footer gap="2">
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  setDrawerOpen(false);
-                }}
-              >
-                Close
-              </Button>
-
-              <Button
-                onClick={() => {
-                  if (!selectedMarker) return;
-                  setEditingMarkerId(selectedMarker.id);
-                  // precompila il dialog come edit
-                  pickedRef.current = {
-                    x: selectedMarker.x,
-                    y: selectedMarker.y,
-                  };
-                  setTitle(selectedMarker.title);
-                  setDescription(selectedMarker.description ?? "");
-                  setAddOpen(true); // riuso MapMarkerDialog
-                }}
-                disabled={!selectedMarker}
-              >
-                Edit
-              </Button>
-
-              <Button
-                variant="solid"
-                onClick={() => {
-                  if (!selectedMarker) return;
-
-                  setMarkers((prev) =>
-                    prev.filter((m) => m.id !== selectedMarker.id)
-                  );
-                  setDrawerOpen(false);
-                  setSelectedMarkerId(null);
-                }}
-                disabled={!selectedMarker}
-              >
-                Delete
-              </Button>
-            </Drawer.Footer>
-          </Drawer.Content>
-        </Drawer.Positioner>
-      </Drawer.Root>
+      <MapMarkerInfoDrwer
+        drawerOpen={drawerOpen}
+        selectedMarker={selectedMarker}
+        setDrawerOpen={setDrawerOpen}
+        setEditingMarkerId={setEditingMarkerId}
+        pickedRef={pickedRef}
+        setTitle={setTitle}
+        setDescription={setDescription}
+        setAddOpen={setAddOpen}
+        setMarkers={setMarkers}
+        setSelectedMarkerId={setSelectedMarkerId}
+      />
     </Box>
   );
 }
