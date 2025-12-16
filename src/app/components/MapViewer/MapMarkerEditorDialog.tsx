@@ -4,7 +4,7 @@ import TextEditor from "../TextEditor";
 interface MapMarkerEditorDialogProps {
   addOpen: boolean;
   setAddOpen: (open: boolean) => void;
-  pickedRef: React.MutableRefObject<{ x: number; y: number } | null>;
+  pickedRef: React.RefObject<{ x: number; y: number } | null>;
   onCreateMarker: () => void;
   title: string;
   setTitle: (title: string) => void;

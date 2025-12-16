@@ -1,13 +1,13 @@
 import { Box, Button, Drawer } from "@chakra-ui/react";
 import { MarkerData } from "./MapViewerTypes";
-import { Dispatch, RefObject, SetStateAction } from "react";
+import { Dispatch, SetStateAction } from "react";
 
 interface MapMarkerInfoDrwerProps {
   drawerOpen: boolean;
   selectedMarker: MarkerData | null;
   setDrawerOpen: Dispatch<SetStateAction<boolean>>;
   setEditingMarkerId: Dispatch<SetStateAction<string | null>>;
-  pickedRef: PickedRefType;
+  pickedRef: React.RefObject<{ x: number; y: number } | null>;
   setTitle: Dispatch<SetStateAction<string>>;
   setDescription: Dispatch<SetStateAction<string>>;
   setAddOpen: Dispatch<SetStateAction<boolean>>;
@@ -15,12 +15,8 @@ interface MapMarkerInfoDrwerProps {
   setSelectedMarkerId: Dispatch<SetStateAction<string | null>>;
 }
 
-type PickedRefType = RefObject<{
-  x: number;
-  y: number;
-} | null>;
-
 export default function MapMarkerInfoDrwer(props: MapMarkerInfoDrwerProps) {
+  const { pickedRef } = props;
   return (
     <Drawer.Root
       open={props.drawerOpen}
@@ -80,7 +76,7 @@ export default function MapMarkerInfoDrwer(props: MapMarkerInfoDrwerProps) {
                 if (!props.selectedMarker) return;
                 props.setEditingMarkerId(props.selectedMarker.id);
                 // precompila il dialog come edit
-                props.pickedRef.current = {
+                pickedRef.current = {
                   x: props.selectedMarker.x,
                   y: props.selectedMarker.y,
                 };
