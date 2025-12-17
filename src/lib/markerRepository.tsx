@@ -1,7 +1,6 @@
 "use server";
 
 import { MarkerData } from "@/app/components/MapViewer/MapViewerTypes";
-import { MapData } from "./mapRepository";
 import { supabaseClient } from "./supabaseClient";
 
 const TABLE_NAME = "map_forge_markers";
