@@ -1,5 +1,6 @@
 "use server";
 
+import { MarkerData } from "@/app/components/MapViewer/MapViewerTypes";
 import { MapData } from "./mapRepository";
 import { supabaseClient } from "./supabaseClient";
 
@@ -26,7 +27,7 @@ export async function saveOrUpdateMarker({
   title,
   description,
   operation = "create",
-}: SaveMarkerArgs): Promise<MapData[] | null> {
+}: SaveMarkerArgs): Promise<MarkerData[] | null> {
   const query =
     operation === "create" // create new marker
       ? supabaseClient
@@ -62,7 +63,7 @@ export async function saveOrUpdateMarker({
 }
 
 // Delete a marker
-export async function deleteMrker(id: string): Promise<MapData[] | null> {
+export async function deleteMrker(id: string): Promise<MarkerData[] | null> {
   const { data, error } = await supabaseClient
     .from(TABLE_NAME)
     .delete()
@@ -71,6 +72,20 @@ export async function deleteMrker(id: string): Promise<MapData[] | null> {
   if (error) {
     console.error("Supabase insert error:", error);
     return null;
+  }
+
+  return data;
+}
+
+// Retrieve all maps markers from the database
+export async function getAllMarkerByMap(mapId: number): Promise<MarkerData[]> {
+  const { data, error } = await supabaseClient
+    .from(TABLE_NAME)
+    .select("id, x, y, title, description")
+    .eq("map_id", mapId);
+  if (error) {
+    console.error("Supabase read error:", error);
+    return [];
   }
 
   return data;

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { LatLngBoundsExpression } from "leaflet";
 import type { MarkerData, LeafletDefaultIconProto } from "./MapViewerTypes";
-import { saveOrUpdateMarker } from "@/lib/markerRepository";
+import { getAllMarkerByMap, saveOrUpdateMarker } from "@/lib/markerRepository";
 
 type LeafletModule = typeof import("leaflet");
 type ReactLeafletModule = typeof import("react-leaflet");
@@ -120,8 +120,25 @@ export function useMapImageViewer({ mapId, imageUrl }: Args) {
    * Currently this is a placeholder; replace with your DB/API call.
    */
   useEffect(() => {
-    // TODO: load markers by mapId
-    setMarkers([]);
+    let cancelled = false;
+
+    // Load all markers for the current map.
+    // The `cancelled` flag prevents state updates if the component unmounts
+    // or if `mapId` changes before the async operation completes,
+    // avoiding race conditions and React state update warnings.
+    (async () => {
+      const allMarkers: MarkerData[] = await getAllMarkerByMap(mapId);
+
+      if (cancelled) return;
+
+      setMarkers(allMarkers);
+    })();
+
+    // Cleanup: mark the effect as cancelled so pending async calls
+    // won't try to update state after unmount or dependency change.
+    return () => {
+      cancelled = true;
+    };
   }, [mapId]);
 
   /**
@@ -176,7 +193,6 @@ export function useMapImageViewer({ mapId, imageUrl }: Args) {
       setEditingMarkerId(null);
       pickedRef.current = null;
 
-      // [TODO] Update marker
       mapId = mapId;
       saveOrUpdateMarker({
         id: editingMarkerId,

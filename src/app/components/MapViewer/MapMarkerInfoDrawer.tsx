@@ -50,7 +50,7 @@ export default function MapMarkerInfoDrwer(props: MapMarkerInfoDrwerProps) {
                 {props.selectedMarker.description ? (
                   <Box
                     mt="2"
-                    // se description è HTML (wysiwyg), renderizzalo così:
+                    // if description is HTML (wysiwyg), render as:
                     dangerouslySetInnerHTML={{
                       __html: props.selectedMarker.description,
                     }}
@@ -78,14 +78,14 @@ export default function MapMarkerInfoDrwer(props: MapMarkerInfoDrwerProps) {
               onClick={() => {
                 if (!props.selectedMarker) return;
                 props.setEditingMarkerId(props.selectedMarker.id);
-                // precompila il dialog come edit
+                // precompile edit dialog
                 pickedRef.current = {
                   x: props.selectedMarker.x,
                   y: props.selectedMarker.y,
                 };
                 props.setTitle(props.selectedMarker.title);
                 props.setDescription(props.selectedMarker.description ?? "");
-                props.setAddOpen(true); // riuso MapMarkerDialog
+                props.setAddOpen(true); // MapMarkerDialog reuse
               }}
               disabled={!props.selectedMarker}
             >
