@@ -3,8 +3,6 @@
 import { supabaseClient } from "./supabaseClient";
 import type { FileObject } from "@supabase/storage-js";
 
-type RemoveItem = { path: string };
-
 interface DeleteResponse {
   data: FileObject[] | null;
   error: { message: string } | null;

@@ -1,12 +1,18 @@
+"use client";
+
 import { Button, CloseButton, Dialog, Portal } from "@chakra-ui/react";
 import { MapItem } from "../types/MapItem";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import deleteMap from "@/lib/deleteMap";
+import { useRouter } from "next/navigation";
 
 export default function DeleteMapDialog(props: {
   mapItem: MapItem | false;
   setDeletingMap: Dispatch<SetStateAction<false | MapItem>>;
 }) {
+  const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState(false);
+
   return (
     <Dialog.Root open={true} role="alertdialog">
       <Dialog.Trigger asChild>
@@ -38,12 +44,19 @@ export default function DeleteMapDialog(props: {
               </Dialog.ActionTrigger>
               <Button
                 colorPalette="red"
-                onClick={() => {
-                  console.log("Click Delete");
-                  if (props.mapItem) {
-                    deleteMap(props.mapItem);
-                  }
+                loading={isDeleting}
+                onClick={async () => {
+                  if (!props.mapItem) return;
+
+                  setIsDeleting(true);
+
+                  const res = await deleteMap(props.mapItem);
+
                   props.setDeletingMap(false);
+                  setIsDeleting(false);
+
+                  // Go to home and shows result message
+                  router.push(`/?deletedMap=${res.ok ? "1" : "0"}`);
                 }}
               >
                 Delete
