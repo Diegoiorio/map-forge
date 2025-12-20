@@ -76,6 +76,11 @@ export default function OpenMapPopup() {
     }
   }, [mapLoaded, viewMode]);
 
+  // Close map list dialod
+  const closeMapView = () => {
+    resetViewMode(dialogViewMode);
+  };
+
   const content = () => {
     return loadingMap ? (
       <SpinnerLoader />
@@ -163,6 +168,7 @@ export default function OpenMapPopup() {
         <DeleteMapDialog
           mapItem={deletingMap}
           setDeletingMap={setDeletingMap}
+          closeMapView={closeMapView}
         />
       )}
     </div>
