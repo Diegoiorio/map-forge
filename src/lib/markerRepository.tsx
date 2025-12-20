@@ -76,6 +76,23 @@ export async function deleteMrker(id: string): Promise<MarkerData[] | null> {
   return data;
 }
 
+// Delete all map marker
+export async function deleteAllMapMrker(
+  mapId: number
+): Promise<MarkerData[] | null> {
+  const { data, error } = await supabaseClient
+    .from(TABLE_NAME)
+    .delete()
+    .eq("map_id", mapId);
+
+  if (error) {
+    console.error("Supabase insert error:", error);
+    return null;
+  }
+
+  return data;
+}
+
 // Retrieve all maps markers from the database
 export async function getAllMarkerByMap(mapId: number): Promise<MarkerData[]> {
   const { data, error } = await supabaseClient

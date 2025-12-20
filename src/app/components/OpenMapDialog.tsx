@@ -1,20 +1,19 @@
-import { Box, Dialog, Flex, Link, List, Portal } from "@chakra-ui/react";
+import { Box, Dialog, Flex, Icon, Link, List, Portal } from "@chakra-ui/react";
 import { useViewMode } from "../providers/ViewModeProvider";
 import CloseButton from "./CloseButton";
 import { useEffect, useRef, useState } from "react";
 import { getAllMaps } from "@/lib/mapRepository";
 import SpinnerLoader from "./SpinnerLoader";
-
-type MapItem = {
-  id: number;
-  name: string;
-  url: string;
-};
+import { LuTrash } from "react-icons/lu";
+import { MapItem } from "../types/MapItem";
+import DeleteMapDialog from "./DeleteMapDialog";
 
 export default function OpenMapPopup() {
   const { viewMode, resetViewMode } = useViewMode();
   const [mapList, setMapList] = useState<MapItem[]>([]);
   const [loadingMap, setLoadingMap] = useState<boolean>(false);
+  const [mapLoaded, setMapLoaded] = useState<boolean>(false);
+  const [deletingMap, setDeletingMap] = useState<MapItem | false>(false);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const dialogViewMode = "mapList";
   const title = "Your maps";
@@ -25,23 +24,37 @@ export default function OpenMapPopup() {
   };
 
   // Close dialog on click outside
+  // Close dialog on click outside (but ignore nested alertdialog)
   useEffect(() => {
     if (viewMode !== dialogViewMode) return;
 
-    const handlePointerDown = (event: PointerEvent) => {
+    const handleDocClick = (event: MouseEvent) => {
+      const target = event.target as Element | null;
+      if (!target) return;
+
+      // If the nested DeleteMapDialog (role="alertdialog") is open,
+      // ignore clicks inside it (content/backdrop/etc.)
+      if (deletingMap && target.closest('[role="alertdialog"]')) {
+        return;
+      }
+
       const el = contentRef.current;
       if (!el) return;
-      if (el.contains(event.target as Node)) return;
 
+      // Click inside outer dialog -> do nothing
+      if (el.contains(target)) return;
+
+      // Real outside click -> close
+      setDeletingMap(false);
       resetViewMode(dialogViewMode);
     };
 
-    document.addEventListener("pointerdown", handlePointerDown, true);
+    document.addEventListener("click", handleDocClick); // <-- no capture
 
     return () => {
-      document.removeEventListener("pointerdown", handlePointerDown, true);
+      document.removeEventListener("click", handleDocClick);
     };
-  }, [viewMode, resetViewMode]);
+  }, [viewMode, resetViewMode, deletingMap]);
 
   // Fetch maps when dialog opens
   useEffect(() => {
@@ -53,12 +66,15 @@ export default function OpenMapPopup() {
 
       if (maps) {
         setMapList(maps);
+        setMapLoaded(true);
       }
       setLoadingMap(false);
     };
 
-    load();
-  }, [viewMode]);
+    if (!mapLoaded) {
+      load();
+    }
+  }, [mapLoaded, viewMode]);
 
   const content = () => {
     return loadingMap ? (
@@ -68,16 +84,52 @@ export default function OpenMapPopup() {
     ) : (
       <Box>
         <List.Root as="ol" unstyled>
-          {mapList.map((map) => (
-            <List.Item
-              as="li"
-              key={map.id}
-              mb={2}
-              _hover={{ textDecoration: "none", opacity: 0.7 }}
-            >
-              <Link href={`/map/${map.id}`}>{map.name}</Link>
-            </List.Item>
-          ))}
+          {mapList.map((map, index) => {
+            const isEvenRow = index % 2 === 1;
+
+            return (
+              <List.Item
+                as="li"
+                key={map.id}
+                mb={2}
+                px={4}
+                py={1.5}
+                bg={isEvenRow ? "gray.800" : "transparent"}
+                borderRadius={5}
+              >
+                <Flex justify="space-between">
+                  <Link
+                    href={`/map/${map.id}`}
+                    _hover={{ textDecoration: "none", opacity: 0.7 }}
+                  >
+                    {map.name}
+                  </Link>
+
+                  <Icon
+                    size="sm"
+                    mt={0.5}
+                    _hover={{
+                      textDecoration: "none",
+                      opacity: 1,
+                      color: "red",
+                    }}
+                    onClick={() => {
+                      const mapToDelete: MapItem = {
+                        id: map.id,
+                        name: map.name,
+                        url: map.url,
+                      };
+
+                      setDeletingMap(mapToDelete);
+                      console.log(mapToDelete);
+                    }}
+                  >
+                    <LuTrash />
+                  </Icon>
+                </Flex>
+              </List.Item>
+            );
+          })}
         </List.Root>
       </Box>
     );
@@ -98,7 +150,7 @@ export default function OpenMapPopup() {
 
               {title && (
                 <Dialog.Header>
-                  <Dialog.Title>{title}</Dialog.Title>
+                  <Dialog.Title fontSize={"1.5em"}>{title}</Dialog.Title>
                 </Dialog.Header>
               )}
               <Dialog.Body spaceY="4">{content()}</Dialog.Body>
@@ -106,6 +158,13 @@ export default function OpenMapPopup() {
           </Dialog.Positioner>
         </Portal>
       </Dialog.Root>
+
+      {viewMode === dialogViewMode && deletingMap && (
+        <DeleteMapDialog
+          mapItem={deletingMap}
+          setDeletingMap={setDeletingMap}
+        />
+      )}
     </div>
   );
 }

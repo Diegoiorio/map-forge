@@ -74,9 +74,6 @@ export default function Navbar() {
         <Flex direction="row" justify={"center"} align={"center"}>
           <Collapsible.Trigger>
             <Box
-              onClick={() => {
-                console.log("Click me!");
-              }}
               borderWidth="1px"
               pl="12"
               pr="12"

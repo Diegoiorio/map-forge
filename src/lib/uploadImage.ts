@@ -5,9 +5,19 @@ interface UploadResponse {
   error: { message: string } | null;
 }
 
+function sanitizeFileName(name: string): string {
+  return name
+    .normalize("NFD") // rimuoves accents
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-") // replace spaces with -
+    .replace(/[^a-zA-Z0-9._-]/g, "") // only safe characters
+    .toLowerCase();
+}
+
 export default async function uploadImage(file: File): Promise<UploadResponse> {
   // e.g. save into a "maps/" folder, keep original filename
-  const filePath = `maps/${crypto.randomUUID()}-${file.name}`;
+  const safeName = sanitizeFileName(file.name);
+  const filePath = `maps/${crypto.randomUUID()}-${safeName}`;
 
   const uploadResponse: UploadResponse = await supabaseClient.storage
     .from("map-forge")

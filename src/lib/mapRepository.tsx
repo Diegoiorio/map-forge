@@ -41,13 +41,28 @@ export async function getAllMaps(): Promise<MapData[] | null> {
   return data;
 }
 
-// Retrieve all maps from the database
+// Retrieve a map from the database
 export async function getMapById(id: number): Promise<MapData | null> {
   const { data, error } = await supabaseClient
     .from(TABLE_NAME)
     .select("*")
     .eq("id", id)
     .maybeSingle();
+
+  if (error) {
+    console.error("Supabase read error:", error);
+    return null;
+  }
+
+  return data;
+}
+
+// Retrieve a map from the database
+export async function deleteMapById(id: number): Promise<MapData | null> {
+  const { data, error } = await supabaseClient
+    .from(TABLE_NAME)
+    .delete()
+    .eq("id", id);
 
   if (error) {
     console.error("Supabase read error:", error);
