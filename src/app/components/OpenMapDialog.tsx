@@ -71,9 +71,7 @@ export default function OpenMapPopup() {
       setLoadingMap(false);
     };
 
-    if (!mapLoaded) {
-      load();
-    }
+    load();
   }, [mapLoaded, viewMode]);
 
   // Close map list dialod
