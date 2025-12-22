@@ -1,6 +1,6 @@
 "use client";
 
-import { Box } from "@chakra-ui/react";
+import { Box, Button } from "@chakra-ui/react";
 import SpinnerLoader from "../SpinnerLoader";
 import { Props } from "./MapViewerTypes";
 import MapNameLabel from "./MapNameLabel";
@@ -8,6 +8,9 @@ import MapMarkerDialog from "./MapMarkerEditorDialog";
 import MapMarkerInfoDrwer from "./MapMarkerInfoDrawer";
 import MapImageViewerContainer from "./MapImageViewerContainer";
 import { useMapImageViewer } from "./useMapImageViewer";
+import { getAllMarkerByMap } from "@/lib/markerRepository";
+import downloadMapPdf from "@/lib/downloadMapPdf";
+import DownloadButton from "./DownloadPdfButton";
 
 export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
   const vm = useMapImageViewer({ mapId, imageUrl });
@@ -19,6 +22,14 @@ export default function MapImageViewer({ mapId, imageUrl, imageName }: Props) {
   return (
     <Box position="absolute" top={0} left={0} right={0}>
       <MapNameLabel imageName={imageName} />
+
+      <DownloadButton
+        getAllMarkerByMap={getAllMarkerByMap}
+        mapId={mapId}
+        imageUrl={imageUrl}
+        imageName={imageName}
+        downloadMapPdf={downloadMapPdf}
+      />
 
       <MapImageViewerContainer
         leaflet={vm.leaflet!}

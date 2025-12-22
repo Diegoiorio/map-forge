@@ -1,5 +1,6 @@
 "use client";
 
+import forceBlankTargets from "@/lib/forceBlankTargets";
 import Editor, {
   Toolbar,
   BtnBold,
@@ -51,7 +52,10 @@ export default function TextEditor(TextEditorProps: TextEditorProps) {
     <Editor
       value={TextEditorProps.description}
       placeholder="Area description"
-      onChange={(e) => TextEditorProps.setDescription(e.target.value)}
+      onChange={(e) => {
+        const next = forceBlankTargets(e.target.value);
+        TextEditorProps.setDescription(next);
+      }}
       className={"wysiwyg"}
       style={{
         width: "100%",

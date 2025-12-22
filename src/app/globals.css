@@ -68,6 +68,7 @@ a {
 .rsw-editor .rsw-ce a,
 .markerDescriptor a {
   text-decoration: underline !important;
+  color: #5c8fff !important;
 }
 
 /* ITALIC */

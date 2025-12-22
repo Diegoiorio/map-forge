@@ -1,5 +1,12 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## TODO
+
+- got to map after upload (add go to map link)
+- names on map markers
+- Insert explanation on home page
+- Map marker selection
+
 ## Getting Started
 
 First, run the development server:
