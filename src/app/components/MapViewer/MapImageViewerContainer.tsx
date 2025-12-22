@@ -1,7 +1,13 @@
 "use client";
 
-import { ImageOverlay, MapContainer, ZoomControl, Marker } from "react-leaflet";
-import type { LatLngBoundsExpression, LatLngExpression } from "leaflet";
+import {
+  ImageOverlay,
+  MapContainer,
+  ZoomControl,
+  Marker,
+  Tooltip,
+} from "react-leaflet";
+import { type LatLngBoundsExpression, type LatLngExpression } from "leaflet";
 import SetInitialView from "./MapImageViewerIntialView";
 import AddMarkerClickHandler from "./AddMarkerClickHandler";
 import { MarkerData } from "./MapViewerTypes";
@@ -51,16 +57,29 @@ export default function MapImageViewerContainer(
           const pos: LatLngExpression = [m.y, m.x];
 
           return (
-            <Marker
-              key={m.id}
-              position={pos}
-              eventHandlers={{
-                click: () => {
-                  props.setSelectedMarkerId(m.id);
-                  props.setDrawerOpen(true);
-                },
-              }}
-            />
+            <div key={m.id}>
+              <Marker
+                key={m.id}
+                position={pos}
+                eventHandlers={{
+                  click: () => {
+                    props.setSelectedMarkerId(m.id);
+                    props.setDrawerOpen(true);
+                  },
+                }}
+              >
+                <Tooltip
+                  permanent
+                  direction="bottom"
+                  offset={[-12, 25]} // move label under marker
+                  opacity={1}
+                  interactive={false}
+                  className="marker-label"
+                >
+                  {m.title}
+                </Tooltip>
+              </Marker>
+            </div>
           );
         })}
       </MapContainer>

@@ -166,6 +166,22 @@ a {
   font-family: inherit !important;
 }
 
+/* MARKER STYLES */
+.marker-label {
+  background: #000 !important;
+  color: white !important;
+  border: 0 !important;
+  border-radius: 10px !important;
+  padding: 1px 8px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  font-size: 12px !important;
+  font-weight: 600;
+}
+
+.marker-label::before {
+  display: none !important; /* remove tooltip arrow */
+}
+
 @import "tailwindcss";
 
 @import "leaflet/dist/leaflet.css";

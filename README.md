@@ -3,9 +3,8 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 ## TODO
 
 - got to map after upload (add go to map link)
-- names on map markers
+- names on map markers on pdf
 - Insert explanation on home page
-- Map marker selection
 
 ## Getting Started
 
