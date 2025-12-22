@@ -1,23 +1,24 @@
+## Project description
+
+A platform that lets users upload maps, place and describe custom markers, and browse a searchable archive of all their mapped worlds.
+
+Those are the main features:
+
+- Load a map as image (png, jpg and jpeg)
+- Put some markers on the map
+- Give a title and descriptions each marker
+- Open and read a map from archive with all relative markers
+- Download pdf with map and marker descriptors
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## TODO
-
-- got to map after upload (add go to map link)
-- names on map markers on pdf
-- Insert explanation on home page
 
 ## Getting Started
 
 First, run the development server:
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -41,17 +42,6 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-## Project description
-
-A platform that lets tabletop RPG players upload maps, place and describe custom markers, and browse a searchable archive of all their mapped worlds.
-
-Those are the main features:
-
-- Load a map as image (png, jspg...)
-- Put some markers on the map
-- Give a title and descriptions each marker
-- Open and read a map from archive with all relative markers
-
 ## Environment variables
 
 - **Local file:** create a file named `.env.local` at the project root for local-only variables. This repository's `.gitignore` already ignores `.env*` files.
@@ -72,52 +62,13 @@ Add your local values to `.env.local` like:
 NEXT_PUBLIC_APP_NAME=MapForge
 
 # Supabase credentials
-SUPABASE_ANON_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxx
-SUPABASE_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 SUPABASE_URL=https://xxxxxxxxxxxxxx.supabase.co
-SUPABASE_PUBLISHABLE_KEY=xxxxxxxxxx
-SUPABASE_SERVICE_ROLE=xxxxxxxxxxxxxxxxxxxxx
-SUPABASE_MAP_BUCKET=map-forge
+SUPABASE_SERVICE_ROLE=supabase_service_role_key
+SUPABASE_MAP_BUCKET=supabase_map_image_bucket
 ```
 
-## Notes ------------------------------------------------------------------
+## BACKLOG
 
-STORAGE MAPPE
-
-1. Supabase
-2. Cloudinary
-3. Save in /public/maps
-
-### Map FE Handler
-
-react-zoom-pan-pinch
-
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-
-```javascript
-export function MapViewer() {
-  return (
-    <div className="w-full h-full bg-slate-900 overflow-hidden">
-      <TransformWrapper
-        initialScale={1}
-        minScale={0.5}
-        maxScale={4}
-        centerOnInit
-      >
-        <TransformComponent>
-          <div className="relative">
-            <img src="/maps/example-map.jpg" alt="Map" />
-
-            {/* Marker di esempio */}
-            <button
-              className="absolute top-[40%] left-[60%] -translate-x-1/2 -translate-y-1/2
-                         w-4 h-4 rounded-full bg-red-500 border-2 border-white cursor-pointer"
-              onClick={() => console.log("Open side panel with marker info")}
-            />
-          </div>
-        </TransformComponent>
-      </TransformWrapper>
-    </div>
-  );
-}
-```
+- Insert a link componente to navigate to the map view after upload
+- Display marker titles directly on the map in exported PDFs
+- Improve the home page with a short introduction and usage explanation

@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Button } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import SpinnerLoader from "../SpinnerLoader";
 import { Props } from "./MapViewerTypes";
 import MapNameLabel from "./MapNameLabel";

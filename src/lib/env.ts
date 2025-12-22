@@ -12,10 +12,7 @@ export const clientEnv = {
 };
 
 export const supabaseCredential = {
-  SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY ?? "",
-  SUPABASE_ID: process.env.SUPABASE_ID ?? "",
   SUPABASE_URL: process.env.SUPABASE_URL ?? "",
-  SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY ?? "",
   SUPABASE_SERVICE_ROLE: process.env.SUPABASE_SERVICE_ROLE ?? "",
   SUPABASE_MAP_BUCKET: process.env.SUPABASE_MAP_BUCKET ?? "",
 };
