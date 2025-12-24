@@ -67,6 +67,55 @@ SUPABASE_SERVICE_ROLE=supabase_service_role_key
 SUPABASE_MAP_BUCKET=supabase_map_image_bucket
 ```
 
+## Run with Docker
+
+This project includes a ready-to-use `Dockerfile` in the repository root.
+
+### Prerequisites
+
+- Docker installed (Docker Desktop on Windows, macOS, or Linux)
+- A `.env.local` file in the project root with the required environment variables (see the section above)
+
+### Build the Docker image
+
+From the project root, run:
+
+```bash
+docker compose --env-file .env.local up --build
+```
+
+This command builds the production-ready Docker image for the application.
+
+### Run the container
+
+If you already have a `.env.local` file in the project root, you can start the container with:
+
+```bash
+docker run --rm -p 3000:3000 --env-file .env.local map-forge
+```
+
+Once the container is running, open your browser and navigate to: `http://localhost:3000`
+
+### Stop the container
+
+If the container is running in the foreground, stop it with: `CTRL + C`.
+If the container is running in detached mode, list and stop it with:
+
+```bash
+docker ps
+docker stop <container_id>
+```
+
+### Notes about PDF generation (Puppeteer)
+
+PDF generation is handled using Puppeteer running inside the Docker container.
+The Docker image is configured to:
+
+- Use system-installed Chromium
+- Disable Chromium sandboxing (required in containers)
+
+No additional configuration is required, as long as the environment variables are correctly provided.
+
 ## BACKLOG
 
 - Insert a link componente to navigate to the map view after upload
