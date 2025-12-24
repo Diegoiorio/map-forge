@@ -65,6 +65,9 @@ NEXT_PUBLIC_APP_NAME=MapForge
 SUPABASE_URL=https://xxxxxxxxxxxxxx.supabase.co
 SUPABASE_SERVICE_ROLE=supabase_service_role_key
 SUPABASE_MAP_BUCKET=supabase_map_image_bucket
+
+# Access key
+ACCESS_KEY=xyz
 ```
 
 ## Run with Docker

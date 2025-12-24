@@ -7,6 +7,7 @@ services:
         SUPABASE_URL: ${SUPABASE_URL}
         SUPABASE_SERVICE_ROLE: ${SUPABASE_SERVICE_ROLE}
         SUPABASE_MAP_BUCKET: ${SUPABASE_MAP_BUCKET}
+        ACCESS_KEY: ${ACCESS_KEY}
     env_file:
       - .env.local
     ports:
