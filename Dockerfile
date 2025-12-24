@@ -1,6 +1,11 @@
-# ---- deps ----
-FROM node:20-bookworm-slim AS deps
+# ---- base ----
+FROM node:20-bookworm-slim AS base
 WORKDIR /app
+ENV NODE_ENV=production
+ENV DEBIAN_FRONTEND=noninteractive
+
+# ---- deps ----
+FROM base AS deps
 
 # System deps for Chromium/Puppeteer + common fonts
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -29,36 +34,36 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 # ---- builder ----
-FROM node:20-bookworm-slim AS builder
-WORKDIR /app
+FROM base AS builder
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Build-time env (needed because Next evaluates server code during build)
-ARG SUPABASE_URL
-ARG SUPABASE_SERVICE_ROLE
-ARG SUPABASE_MAP_BUCKET
-ARG NEXT_PUBLIC_APP_NAME
+# Build-time env:
+# Next.js may execute server code during `next build` (collecting page data),
+# so we provide SAFE fallback values to avoid failing the build when build-args
+# are not provided (e.g. Fly.io web UI deploy).
+ARG SUPABASE_URL="https://example.supabase.co"
+ARG SUPABASE_SERVICE_ROLE="DUMMY_BUILD_TIME_KEY"
+ARG SUPABASE_MAP_BUCKET="dummy-bucket"
+ARG NEXT_PUBLIC_APP_NAME="MapForge"
 
-ENV SUPABASE_URL=$SUPABASE_URL
-ENV SUPABASE_SERVICE_ROLE=$SUPABASE_SERVICE_ROLE
-ENV SUPABASE_MAP_BUCKET=$SUPABASE_MAP_BUCKET
-ENV NEXT_PUBLIC_APP_NAME=$NEXT_PUBLIC_APP_NAME
+ENV SUPABASE_URL=${SUPABASE_URL}
+ENV SUPABASE_SERVICE_ROLE=${SUPABASE_SERVICE_ROLE}
+ENV SUPABASE_MAP_BUCKET=${SUPABASE_MAP_BUCKET}
+ENV NEXT_PUBLIC_APP_NAME=${NEXT_PUBLIC_APP_NAME}
 
-ENV NODE_ENV=production
 RUN npm run build
 
 # ---- runner ----
-FROM node:20-bookworm-slim AS runner
-WORKDIR /app
+FROM base AS runner
 
+# Runtime deps (Chromium)
 RUN apt-get update && apt-get install -y --no-install-recommends \
   chromium \
   ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
-ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 
