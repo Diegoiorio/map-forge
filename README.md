@@ -69,14 +69,15 @@ SUPABASE_MAP_BUCKET=supabase_map_image_bucket
 
 ## Run with Docker
 
-This project includes a ready-to-use `Dockerfile` in the repository root.
+This project includes a ready-to-use `Dockerfile` in the repository root.  
+Docker Compose is the recommended way to build and run the app locally.
 
 ### Prerequisites
 
 - Docker installed (Docker Desktop on Windows, macOS, or Linux)
 - A `.env.local` file in the project root with the required environment variables (see the section above)
 
-### Build the Docker image
+### Build and run (one command)
 
 From the project root, run:
 
@@ -84,26 +85,25 @@ From the project root, run:
 docker compose --env-file .env.local up --build
 ```
 
-This command builds the production-ready Docker image for the application.
-
-### Run the container
-
-If you already have a `.env.local` file in the project root, you can start the container with:
-
-```bash
-docker run --rm -p 3000:3000 --env-file .env.local map-forge
-```
-
-Once the container is running, open your browser and navigate to: `http://localhost:3000`
+Then open: `http://localhost:3000`
 
 ### Stop the container
 
 If the container is running in the foreground, stop it with: `CTRL + C`.
-If the container is running in detached mode, list and stop it with:
+
+### Run in detached mode
+
+Detached mode starts the containers in the background and immediately returns control to your terminal.
+Use it if you want the app to keep running without keeping the terminal open.
 
 ```bash
-docker ps
-docker stop <container_id>
+docker compose --env-file .env.local up --build -d
+```
+
+To stop:
+
+```bash
+docker compose down
 ```
 
 ### Notes about PDF generation (Puppeteer)
