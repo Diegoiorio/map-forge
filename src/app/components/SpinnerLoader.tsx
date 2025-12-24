@@ -1,9 +1,15 @@
 import { Flex, Spinner } from "@chakra-ui/react";
 
-export default function SpinnerLoader() {
+type SpinnerSize = "sm" | "md" | "lg" | "xl" | "inherit" | "xs" | undefined;
+
+type SpinnerLoaderProps = {
+  size?: SpinnerSize;
+};
+
+export default function SpinnerLoader({ size = "xl" }: SpinnerLoaderProps) {
   return (
     <Flex justify="center" align="center" minH="100px">
-      <Spinner color="teal.500" size="xl" />
+      <Spinner color="teal.500" size={size} />
     </Flex>
   );
 }

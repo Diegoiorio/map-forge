@@ -1,5 +1,9 @@
+"use client";
+
 import { Button } from "@chakra-ui/react";
 import { MarkerData } from "./MapViewerTypes";
+import { useState } from "react";
+import SpinnerLoader from "../SpinnerLoader";
 
 export default function DownloadButton(props: {
   getAllMarkerByMap(mapId: number): Promise<MarkerData[]>;
@@ -12,6 +16,8 @@ export default function DownloadButton(props: {
     markers: MarkerData[];
   }): Promise<void>;
 }) {
+  const [loading, setLoading] = useState<boolean>(false);
+
   return (
     <Button
       fontSize="sm"
@@ -28,6 +34,7 @@ export default function DownloadButton(props: {
       cursor={"pointer"}
       boxShadow="0 2px 8px rgba(0,0,0,0.30)"
       onClick={async () => {
+        setLoading(true);
         const markers = await props.getAllMarkerByMap(props.mapId); // Marker list
 
         const mapObject = {
@@ -37,9 +44,11 @@ export default function DownloadButton(props: {
         };
 
         props.downloadMapPdf(mapObject);
+        setLoading(true);
       }}
     >
       Download pdf
+      {loading && <SpinnerLoader size="sm" />}
     </Button>
   );
 }
