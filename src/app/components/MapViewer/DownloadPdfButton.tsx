@@ -34,17 +34,22 @@ export default function DownloadButton(props: {
       cursor={"pointer"}
       boxShadow="0 2px 8px rgba(0,0,0,0.30)"
       onClick={async () => {
-        setLoading(true);
-        const markers = await props.getAllMarkerByMap(props.mapId); // Marker list
+        try {
+          setLoading(true);
 
-        const mapObject = {
-          imageUrl: props.imageUrl, // map image url
-          imageName: props.imageName, // map image name
-          markers, // map markers list
-        };
+          const markers = await props.getAllMarkerByMap(props.mapId);
 
-        props.downloadMapPdf(mapObject);
-        setLoading(false);
+          await props.downloadMapPdf({
+            imageUrl: props.imageUrl,
+            imageName: props.imageName,
+            markers,
+          });
+        } catch (err) {
+          console.error(err);
+          // optional: show a toast here
+        } finally {
+          setLoading(false);
+        }
       }}
     >
       Download pdf
