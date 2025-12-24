@@ -44,7 +44,7 @@ export default function DownloadButton(props: {
         };
 
         props.downloadMapPdf(mapObject);
-        setLoading(true);
+        setLoading(false);
       }}
     >
       Download pdf
