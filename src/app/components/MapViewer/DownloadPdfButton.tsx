@@ -46,7 +46,6 @@ export default function DownloadButton(props: {
           });
         } catch (err) {
           console.error(err);
-          // optional: show a toast here
         } finally {
           setLoading(false);
         }
