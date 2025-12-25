@@ -53,7 +53,7 @@ export default function UnlockPage() {
         </Text>
       )}
 
-      <Button onClick={submit} isLoading={loading} width="100">
+      <Button onClick={submit} loading={loading} width="100%">
         Entra
       </Button>
     </Box>
